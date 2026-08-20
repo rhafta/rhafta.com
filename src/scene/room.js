@@ -134,8 +134,8 @@ function buildDesk(root) {
   }
 
   // desk mat
-  const deskMat = box(0.9, 0.02, 1.5, P.deskMat);
-  deskMat.position.set(-3.95, 1.57, -1.0);
+  const deskMat = box(1.1, 0.02, 1.5, P.deskMat);
+  deskMat.position.set(-3.87, 1.57, -1.0);
   g.add(deskMat);
 
   // monitor
@@ -158,9 +158,9 @@ function buildDesk(root) {
   screenLight.position.set(-3.9, 2.1, -1.0);
   g.add(screenLight);
 
-  // keyboard
+  // keyboard, pulled toward the user
   const keyboard = box(0.34, 0.05, 1.0, 0x4a4450);
-  keyboard.position.set(-3.85, 1.6, -1.0);
+  keyboard.position.set(-3.52, 1.6, -1.0);
   g.add(keyboard);
 
   // little desk plant

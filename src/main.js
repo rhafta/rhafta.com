@@ -78,6 +78,25 @@ const character = buildCharacter(scene);
 
 const dayNight = new DayNight({ scene, hemiLight, sunLight, refs });
 
+// allow ?focus=char (+ optional &az=<radians>) to zoom in on the character (handy for tweaking)
+const debugParams = new URLSearchParams(location.search);
+if (debugParams.get('focus') === 'char') {
+  controls.target.set(-3.1, 1.4, -1.0);
+  const az = parseFloat(debugParams.get('az'));
+  if (!Number.isNaN(az)) {
+    const r = 18;
+    const polar = 1.05;
+    camera.position.set(
+      controls.target.x + r * Math.sin(polar) * Math.sin(az),
+      controls.target.y + r * Math.cos(polar),
+      controls.target.z + r * Math.sin(polar) * Math.cos(az)
+    );
+  }
+  camera.zoom = 3;
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
 // allow ?mode=day / ?mode=night for previews and shared links
 const modeParam = new URLSearchParams(location.search).get('mode');
 if (modeParam === 'day' || modeParam === 'night') {
