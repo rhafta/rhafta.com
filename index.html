@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rhafta</title>
+    <meta name="description" content="rhafta — developer. a cozy little room on the web." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+
+    <header class="ui ui-name">
+      <h1>rhafta</h1>
+      <p>developer · engineer</p>
+    </header>
+
+    <div class="ui ui-clock">
+      <span id="clock-time">--:--</span>
+      <span id="clock-date"></span>
+    </div>
+
+    <div class="ui ui-controls">
+      <button id="mode-toggle" title="낮/밤 미리보기">auto</button>
+    </div>
+
+    <p class="ui ui-hint">drag to look around</p>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
