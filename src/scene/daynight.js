@@ -60,7 +60,7 @@ export class DayNight {
     this.sunLight.color.copy(this.sunDay).lerp(this.sunNight, n);
     this.sunLight.intensity = 0.35 + 2.4 * day;
 
-    const { paneMat, screenMat, screenLight, shadeMat, lampLight } = this.refs;
+    const { paneMat, screenMat, screenLight, shadeMat, lampLight, bulbsMat } = this.refs;
 
     paneMat.emissive.copy(this.paneDay).lerp(this.paneNight, n);
     paneMat.emissiveIntensity = 1.0 - 0.35 * n;
@@ -69,6 +69,9 @@ export class DayNight {
     screenMat.emissive.copy(this.screenDay).lerp(this.screenNight, n);
     screenMat.emissiveIntensity = 0.55 + 0.55 * n;
     screenLight.intensity = 0.4 + 1.0 * n;
+
+    // fairy lights on the back wall glow at night
+    bulbsMat.emissiveIntensity = 0.15 + n * 1.3;
 
     // the mood lamp comes on at night, with a gentle warm flicker
     const flicker = 1 + Math.sin(performance.now() * 0.0021) * 0.04;
