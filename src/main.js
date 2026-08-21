@@ -18,7 +18,7 @@ const scene = new THREE.Scene();
 
 /* --------------------------------- camera --------------------------------- */
 
-const VIEW_SIZE = 5.6;
+const VIEW_SIZE = 5.1;
 const camera = new THREE.OrthographicCamera();
 camera.position.set(13, 11, 13);
 
@@ -39,7 +39,7 @@ resize();
 window.addEventListener('resize', resize);
 
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(-0.4, 1.7, -0.2);
+controls.target.set(-0.1, 1.4, 0.5);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.enablePan = false;
@@ -81,7 +81,7 @@ const dayNight = new DayNight({ scene, hemiLight, sunLight, refs });
 // allow ?focus=char (+ optional &az=<radians>) to zoom in on the character (handy for tweaking)
 const debugParams = new URLSearchParams(location.search);
 if (debugParams.get('focus') === 'char') {
-  controls.target.set(-3.1, 1.4, -1.0);
+  controls.target.set(-1.7, 1.5, 0.7);
   const az = parseFloat(debugParams.get('az'));
   if (!Number.isNaN(az)) {
     const r = 18;

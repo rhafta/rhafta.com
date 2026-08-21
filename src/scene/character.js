@@ -135,7 +135,7 @@ export function buildCharacter(scene) {
   g.add(bodyG);
 
   // place at the desk, facing -x
-  g.position.set(-2.72, 0, -1.0);
+  g.position.set(-1.27, 0, 0.7);
   scene.add(g);
 
   return {
