@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { N8AOPass } from 'n8ao';
 import { buildRoom, updateSteam } from './scene/room.js';
 import { buildCharacter } from './scene/character.js';
 import { DayNight } from './scene/daynight.js';
@@ -22,6 +26,8 @@ const VIEW_SIZE = 5.1;
 const camera = new THREE.OrthographicCamera();
 camera.position.set(13, 11, 13);
 
+let composer = null;
+
 function resize() {
   const w = window.innerWidth;
   const h = window.innerHeight;
@@ -34,6 +40,10 @@ function resize() {
   camera.far = 60;
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
+  if (composer) {
+    composer.setPixelRatio(renderer.getPixelRatio());
+    composer.setSize(w, h);
+  }
 }
 resize();
 window.addEventListener('resize', resize);
@@ -77,6 +87,30 @@ const refs = buildRoom(scene);
 const character = buildCharacter(scene);
 
 const dayNight = new DayNight({ scene, hemiLight, sunLight, refs });
+
+/* ----------------------------- post-processing ----------------------------- */
+// SSAO grounds the furniture (contact shadows in corners/creases) and bloom
+// makes the emissives (LED strip, screens) actually glow.
+
+composer = new EffectComposer(renderer);
+const n8aoPass = new N8AOPass(scene, camera, window.innerWidth, window.innerHeight);
+n8aoPass.configuration.aoRadius = 1.2;
+n8aoPass.configuration.distanceFalloff = 2.4;
+n8aoPass.configuration.intensity = 2.6;
+n8aoPass.configuration.aoSamples = 12;
+n8aoPass.configuration.denoiseRadius = 8;
+// OutputPass does tone mapping + sRGB at the end; N8AO must not also gamma-correct
+n8aoPass.configuration.gammaCorrection = false;
+composer.addPass(n8aoPass);
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.25,
+  0.55,
+  0.85
+);
+composer.addPass(bloomPass);
+composer.addPass(new OutputPass());
+resize();
 
 // allow ?focus=char (+ optional &az=<radians>) to zoom in on the character (handy for tweaking)
 const debugParams = new URLSearchParams(location.search);
@@ -141,7 +175,7 @@ function animate() {
   dayNight.update(dt);
   controls.update();
 
-  renderer.render(scene, camera);
+  composer.render();
   requestAnimationFrame(animate);
 }
 animate();

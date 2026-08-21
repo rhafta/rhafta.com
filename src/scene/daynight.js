@@ -8,7 +8,7 @@ export class DayNight {
     this.scene = scene;
     this.hemiLight = hemiLight;
     this.sunLight = sunLight;
-    this.refs = refs; // { screenLight, ledMat, ledLight, shadeMat, lampLight, bulbsMat }
+    this.refs = refs; // { screenLight, ledMat, ledLight }
 
     this.mode = 'auto'; // 'auto' | 'day' | 'night'
     this.nightness = this.targetNightness();
@@ -50,27 +50,20 @@ export class DayNight {
     this.scene.background.copy(this.bgDay).lerp(this.bgNight, n);
 
     this.hemiLight.color.copy(this.hemiDay).lerp(this.hemiNight, n);
-    this.hemiLight.intensity = 0.45 + 0.75 * day;
+    this.hemiLight.intensity = 0.55 + 0.65 * day;
 
     this.sunLight.color.copy(this.sunDay).lerp(this.sunNight, n);
     this.sunLight.intensity = 0.35 + 2.4 * day;
 
-    const { screenLight, ledMat, ledLight, shadeMat, lampLight, bulbsMat } = this.refs;
+    const { screenLight, ledMat, ledLight } = this.refs;
 
     screenLight.intensity = 0.4 + 1.0 * n;
 
-    // the LED strip behind the monitors breathes slowly and dominates at night
+    // the LED strip behind the monitors is the room's mood light: it
+    // breathes slowly and dominates at night
     const breathe = 1 + Math.sin(performance.now() * 0.0012) * 0.12;
-    ledMat.emissiveIntensity = (0.35 + 1.5 * n) * breathe;
-    ledLight.intensity = (0.25 + 2.6 * n) * breathe;
-
-    // fairy lights over the bed glow at night
-    bulbsMat.emissiveIntensity = 0.15 + n * 1.3;
-
-    // the mood lamp comes on at night, with a gentle warm flicker
-    const flicker = 1 + Math.sin(performance.now() * 0.0021) * 0.04;
-    shadeMat.emissiveIntensity = n * 1.15 * flicker;
-    lampLight.intensity = n * 3.0 * flicker;
+    ledMat.emissiveIntensity = (0.35 + 2.3 * n) * breathe;
+    ledLight.intensity = (0.25 + 4.2 * n) * breathe;
 
     document.body.classList.toggle('night', n > 0.5);
   }

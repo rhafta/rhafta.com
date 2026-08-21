@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { PALETTE as P } from './palette.js';
+import { getWoodTexture, getPlasterTexture, getFabricTexture } from './textures.js';
 
 // Room footprint: 3.3m x 3.3m at 0.5m per unit -> 6.6 x 6.6.
 // Solid walls at the back (-z) and left (-x); low stub walls on the open
@@ -53,6 +54,20 @@ function torus(r, tube, color, arc = Math.PI * 2, opts = {}) {
 
 function jitter(i) {
   return (Math.sin(i * 127.1 + 311.7) * 43758.5453) % 1;
+}
+
+// shared glass for the balcony balustrade and the sliding door
+let glassMatCache = null;
+function glassMat() {
+  if (!glassMatCache) {
+    glassMatCache = new THREE.MeshStandardMaterial({
+      color: 0xd4ecf4,
+      transparent: true,
+      opacity: 0.16,
+      roughness: 0.1,
+    });
+  }
+  return glassMatCache;
 }
 
 /* ------------------------------ screen textures ---------------------------- */
@@ -168,7 +183,7 @@ function buildFloor(root) {
     const plank = shadowed(
       new THREE.Mesh(
         new THREE.BoxGeometry(plankW - 0.03, 0.4, R * 2),
-        new THREE.MeshStandardMaterial({ color: base, roughness: 0.9 })
+        new THREE.MeshStandardMaterial({ color: base, roughness: 0.9, map: getWoodTexture() })
       )
     );
     plank.position.set(-R + plankW / 2 + i * plankW, -0.2, 0);
@@ -273,34 +288,40 @@ function buildTerrace(root) {
     const plank = shadowed(
       new THREE.Mesh(
         new THREE.BoxGeometry(R * 2, 0.32, depth / rows - 0.025),
-        new THREE.MeshStandardMaterial({ color: base, roughness: 0.9 })
+        new THREE.MeshStandardMaterial({ color: base, roughness: 0.9, map: getWoodTexture() })
       )
     );
     plank.position.set(0, -0.21, z0 + (i + 0.5) * (depth / rows));
     g.add(plank);
   }
 
-  // railing along the outer edges
-  const railTop = (y) => y - 0.05;
-  const posts = [];
-  for (let x = -R; x <= R + 0.01; x += 1.1) posts.push([x, z0 + depth - 0.06]);
-  for (const zz of [z0 + 0.6, z0 + 1.3]) posts.push([-R, zz], [R, zz]);
-  for (const [px, pz] of posts) {
-    const post = box(0.08, 1.05, 0.08, P.railing);
-    post.position.set(px, 0.47, pz);
+  // apartment-style glass balustrade: thin metal rails + clear glass panels,
+  // so the outside stays wide open
+  const railC = 0x55525c;
+  const addGlassRun = (len, cx2, cz2, rotY) => {
+    const run = new THREE.Group();
+    const bottom = box(len, 0.05, 0.06, railC);
+    bottom.position.y = 0.06;
+    const top = box(len, 0.06, 0.08, railC);
+    top.position.y = 1.06;
+    run.add(bottom, top);
+    const glass = new THREE.Mesh(new THREE.BoxGeometry(len - 0.04, 0.96, 0.035), glassMat());
+    glass.position.y = 0.56;
+    run.add(glass);
+    run.position.set(cx2, -0.05, cz2);
+    run.rotation.y = rotY;
+    g.add(run);
+  };
+  addGlassRun(R * 2 + 0.1, 0, z0 + depth - 0.05, 0);
+  addGlassRun(depth, -R + 0.03, z0 + depth / 2, Math.PI / 2);
+  addGlassRun(depth, R - 0.03, z0 + depth / 2, Math.PI / 2);
+  for (const [px, pz] of [
+    [-R + 0.03, z0 + depth - 0.05],
+    [R - 0.03, z0 + depth - 0.05],
+  ]) {
+    const post = box(0.07, 1.14, 0.07, railC);
+    post.position.set(px, 0.52, pz);
     g.add(post);
-  }
-  const railF = box(R * 2 + 0.08, 0.09, 0.12, P.railing);
-  railF.position.set(0, railTop(1.05), z0 + depth - 0.06);
-  const midF = box(R * 2, 0.05, 0.06, P.railing);
-  midF.position.set(0, 0.45, z0 + depth - 0.06);
-  g.add(railF, midF);
-  for (const sx of [-R, R]) {
-    const rail = box(0.12, 0.09, depth, P.railing);
-    rail.position.set(sx, railTop(1.05), z0 + depth / 2);
-    const mid = box(0.06, 0.05, depth, P.railing);
-    mid.position.set(sx, 0.45, z0 + depth / 2);
-    g.add(rail, mid);
   }
 
   // small cafe table + two chairs
@@ -340,74 +361,51 @@ function buildTerrace(root) {
     g.add(ch);
   }
 
-  // potted plant in the terrace corner
-  const pot = cylinder(0.3, 0.23, 0.46, P.pot, 14);
-  pot.position.set(2.55, 0.13, z0 + 1.35);
-  const rim = torus(0.29, 0.03, P.pot);
-  rim.rotation.x = Math.PI / 2;
-  rim.position.set(2.55, 0.36, z0 + 1.35);
-  g.add(pot, rim);
-  for (const [dx, dy, dz, r] of [
-    [0, 0.75, 0, 0.32],
-    [-0.2, 0.55, 0.1, 0.2],
-    [0.18, 0.6, -0.1, 0.22],
-  ]) {
-    const leaf = sphere(r, P.leaf);
-    leaf.position.set(2.55 + dx, 0.36 + dy, z0 + 1.35 + dz);
-    leaf.scale.y = 1.25;
-    g.add(leaf);
-  }
-
   root.add(g);
-  return buildSlidingDoor(root);
+  buildSlidingDoor(root);
 }
 
-// sliding glass door in the front stub-wall gap, cut low like the stub walls
-// so it never occludes the room; one panel is slid open over the right stub
+// sliding glass terrace door, cut to the same height language as the glass
+// balustrade so the whole front reads as one apartment glass system; one
+// panel is slid open over the stub wall
 function buildSlidingDoor(root) {
   const g = new THREE.Group();
   const z = R + WALL_T / 2;
-  const h = 0.62;
+  const h = 1.06;
+  const railC = 0x55525c;
 
+  // slim track flush with the floor
+  const track = box(DOOR_X1 - DOOR_X0 + 0.1, 0.05, 0.34, 0xcfcbc4);
+  track.position.set((DOOR_X0 + DOOR_X1) / 2, 0.025, z);
+  g.add(track);
   for (const px of [DOOR_X0, DOOR_X1]) {
-    const post = box(0.1, h + 0.12, 0.14, P.glassFrame);
-    post.position.set(px, (h + 0.12) / 2, z);
+    const post = box(0.08, h + 0.08, 0.1, railC);
+    post.position.set(px, (h + 0.08) / 2, z);
     g.add(post);
   }
-  const sill = box(DOOR_X1 - DOOR_X0, 0.06, 0.34, P.wallCap);
-  sill.position.set((DOOR_X0 + DOOR_X1) / 2, 0.03, z);
-  g.add(sill);
 
-  const glassMat = new THREE.MeshStandardMaterial({
-    color: 0xd8ecf2,
-    transparent: true,
-    opacity: 0.28,
-    roughness: 0.15,
-  });
-
-  // closed panel fills the right half of the opening; the other panel is
-  // slid past it onto the stub wall (door open toward the terrace table)
+  // closed panel over the left half; second panel slid behind it (open right)
   const pw = (DOOR_X1 - DOOR_X0) / 2 + 0.1;
   const panels = [
-    { cx: DOOR_X1 - pw / 2 + 0.05, zOff: 0.055 },
-    { cx: DOOR_X1 + pw / 2 - 0.2, zOff: -0.055 },
+    { cx: DOOR_X0 + pw / 2 - 0.05, zOff: 0.05 },
+    { cx: DOOR_X0 + pw - 0.35, zOff: -0.05 },
   ];
   for (const p of panels) {
     const frame = new THREE.Group();
     for (const [w2, h2, dx, dy] of [
-      [pw, 0.07, 0, h - 0.1],
-      [pw, 0.08, 0, 0.1],
-      [0.08, h - 0.1, -pw / 2 + 0.04, h / 2],
-      [0.08, h - 0.1, pw / 2 - 0.04, h / 2],
+      [pw, 0.06, 0, h - 0.06],
+      [pw, 0.07, 0, 0.08],
+      [0.06, h - 0.08, -pw / 2 + 0.03, h / 2],
+      [0.06, h - 0.08, pw / 2 - 0.03, h / 2],
     ]) {
-      const bar = box(w2, h2, 0.06, P.glassFrame);
+      const bar = box(w2, h2, 0.05, railC);
       bar.position.set(dx, dy, 0);
       frame.add(bar);
     }
-    const glass = new THREE.Mesh(new THREE.BoxGeometry(pw - 0.12, h - 0.2, 0.025), glassMat);
+    const glass = new THREE.Mesh(new THREE.BoxGeometry(pw - 0.1, h - 0.16, 0.025), glassMat());
     glass.position.set(0, h / 2, 0);
     frame.add(glass);
-    frame.position.set(p.cx, 0.06, z + p.zOff);
+    frame.position.set(p.cx, 0.05, z + p.zOff);
     g.add(frame);
   }
 
@@ -638,195 +636,92 @@ function buildBed(root) {
   pillow.rotation.y = 0.06;
   g.add(pillow);
 
-  buildCat(g, x - 0.1, 0.94, zc + 1.0);
-
-  root.add(g);
-}
-
-function buildCat(root, x, y, z) {
-  const c = 0xc98d5f;
-  const g = new THREE.Group();
-  const body = sphere(0.26, c);
-  body.scale.set(1.25, 0.72, 1.0);
-  const head = sphere(0.15, c);
-  head.position.set(-0.26, 0.08, 0.14);
-  head.scale.set(1.05, 0.92, 1.0);
-  for (const side of [-1, 1]) {
-    const ear = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.09, 6), mat(c)));
-    ear.position.set(-0.29, 0.22, 0.14 + side * 0.07);
-    g.add(ear);
-  }
-  const tail = torus(0.21, 0.04, c, Math.PI * 1.2);
-  tail.rotation.x = Math.PI / 2;
-  tail.position.set(0.06, -0.02, 0.06);
-  g.add(body, head, tail);
-  g.position.set(x, y, z);
-  g.rotation.y = 0.5;
   root.add(g);
 }
 
 /* -------------------------------- wardrobe -------------------------------- */
 
+// open wardrobe: no doors, the interior shows hanging clothes and folded
+// stacks (clothing-rack style, facing into the room)
 function buildWardrobe(root) {
   const g = new THREE.Group();
   const cx = -0.2;
-  const cz = -2.94;
+  const cz = -2.96;
   const w = 1.8;
   const h = 3.55;
+  const d = 0.6;
+  const t = 0.07;
+  const zFront = cz + d / 2;
 
-  const body = rbox(w, h, 0.62, P.wardrobe, 0.03);
-  body.position.set(cx, h / 2 + 0.08, cz);
-  g.add(body);
-  for (const side of [-1, 1]) {
-    const door = rbox(w / 2 - 0.09, h - 0.24, 0.05, P.wardrobeDoor, 0.02);
-    door.position.set(cx + side * (w / 4 - 0.01), h / 2 + 0.08, cz + 0.32);
-    const knob = cylinder(0.02, 0.02, 0.16, P.woodDark, 8);
-    knob.position.set(cx + side * 0.14, h / 2 + 0.08, cz + 0.36);
-    g.add(door, knob);
-  }
-  for (const side of [-1, 1]) {
-    const foot = box(0.12, 0.16, 0.5, P.woodDark);
-    foot.position.set(cx + side * (w / 2 - 0.12), 0.08, cz);
-    g.add(foot);
-  }
-  // storage box on top
-  const bin = rbox(0.7, 0.42, 0.5, 0xa8927a, 0.03);
-  bin.position.set(cx - 0.4, h + 0.32, cz);
-  g.add(bin);
+  // carcass: sides, top, base plinth, back panel, center divider
+  const sideL = rbox(t, h, d, P.wardrobe, 0.02);
+  sideL.position.set(cx - w / 2 + t / 2, h / 2 + 0.06, cz);
+  const sideR = sideL.clone();
+  sideR.position.x = cx + w / 2 - t / 2;
+  const topP = rbox(w, t, d, P.wardrobe, 0.02);
+  topP.position.set(cx, h + 0.06 - t / 2, cz);
+  const base = box(w, 0.5, d, P.wardrobe);
+  base.position.set(cx, 0.31, cz);
+  const back = box(w - 0.1, h - 0.5, 0.05, 0xb08e60);
+  back.position.set(cx, h / 2 + 0.25, cz - d / 2 + 0.05);
+  const divider = box(0.05, h - 0.62, d - 0.08, P.wardrobe);
+  divider.position.set(cx + 0.32, (h - 0.62) / 2 + 0.56, cz);
+  g.add(sideL, sideR, topP, base, back, divider);
 
-  root.add(g);
-}
+  // base drawer with handles
+  const drawer = rbox(w - 0.16, 0.36, 0.05, P.wardrobeDoor, 0.015);
+  drawer.position.set(cx, 0.32, zFront - 0.01);
+  const pull = box(0.3, 0.03, 0.03, P.woodDark);
+  pull.position.set(cx, 0.32, zFront + 0.02);
+  g.add(drawer, pull);
 
-/* ------------------------------- decorations ------------------------------ */
+  // hanging section (left of the divider): rod + clothes on hangers
+  const rodY = h - 0.42;
+  const rod = cylinder(0.022, 0.022, w - 0.75, 0x8f8d96, 10, { roughness: 0.4, metalness: 0.6 });
+  rod.rotation.z = Math.PI / 2;
+  rod.position.set(cx - 0.32, rodY, cz);
+  g.add(rod);
 
-function buildRug(root) {
-  const mk = (r, h, color, y) => {
-    const m = cylinder(r, r, h, color, 36);
-    m.castShadow = false;
-    m.position.set(-0.15, y, 0.55);
-    return m;
-  };
-  root.add(mk(1.15, 0.05, P.rugBorder, 0.03));
-  root.add(mk(1.0, 0.052, P.rug, 0.031));
-  root.add(mk(0.55, 0.054, P.rugBorder, 0.032));
-}
-
-function buildStringLights(root) {
-  const g = new THREE.Group();
-  const x0 = 1.0;
-  const x1 = 3.2;
-  const yTop = 3.9;
-  const sag = 0.32;
-  const zw = -R + 0.09;
-
-  const pts = [];
-  for (let i = 0; i <= 30; i++) {
-    const t = i / 30;
-    pts.push(new THREE.Vector3(x0 + (x1 - x0) * t, yTop - Math.sin(Math.PI * t) * sag, zw));
-  }
-  g.add(
-    new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineBasicMaterial({ color: 0x4a4038 })
-    )
-  );
-
-  const bulbsMat = new THREE.MeshStandardMaterial({
-    color: 0xffe6b8,
-    emissive: 0xffc98a,
-    emissiveIntensity: 0.15,
-    roughness: 1,
-  });
-  for (let i = 1; i < 8; i++) {
-    const t = i / 8;
-    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.042, 10, 8), bulbsMat);
-    bulb.position.set(x0 + (x1 - x0) * t, yTop - Math.sin(Math.PI * t) * sag - 0.055, zw);
-    g.add(bulb);
-  }
-
-  root.add(g);
-  return { bulbsMat };
-}
-
-function buildWallDecor(root) {
-  // clock above the wardrobe
-  const clockFace = cylinder(0.26, 0.26, 0.05, 0xf2ead9, 24);
-  clockFace.rotation.x = Math.PI / 2;
-  clockFace.position.set(0.45, 4.15, -R + 0.1);
-  const clockRim = torus(0.26, 0.032, P.woodDark);
-  clockRim.position.set(0.45, 4.15, -R + 0.12);
-  const handA = box(0.028, 0.16, 0.02, 0x3b3430);
-  handA.position.set(0.45, 4.21, -R + 0.14);
-  const handB = box(0.028, 0.12, 0.02, 0x3b3430);
-  handB.rotation.z = Math.PI / 2.6;
-  handB.position.set(0.495, 4.13, -R + 0.14);
-  root.add(clockFace, clockRim, handA, handB);
-
-}
-
-function buildPlant(root) {
-  const g = new THREE.Group();
-  const px = -2.45;
-  const pz = 2.75;
-  const pot = cylinder(0.26, 0.2, 0.42, P.pot, 14);
-  pot.position.set(px, 0.21, pz);
-  const rim = torus(0.25, 0.03, P.pot);
-  rim.rotation.x = Math.PI / 2;
-  rim.position.set(px, 0.42, pz);
-  g.add(pot, rim);
-  const stems = [
-    [0, 1.0, 0, 0.3, 0],
-    [-0.2, 0.8, -0.1, 0.2, 0.3],
-    [0.18, 0.85, 0.14, 0.22, -0.3],
+  const clothes = [
+    { c: 0xe8e4da, len: 1.0, w2: 0.34 }, // white shirt
+    { c: 0x687a5c, len: 1.1, w2: 0.36 }, // sage hoodie
+    { c: 0x5a6b8a, len: 1.05, w2: 0.34 }, // navy shirt
+    { c: 0x3f3c45, len: 1.6, w2: 0.38 }, // long dark coat
+    { c: 0xc9a26b, len: 0.95, w2: 0.32 }, // mustard tee
   ];
-  for (const [dx, top, dz, r] of stems) {
-    const stem = cylinder(0.022, 0.03, top - 0.42, P.leafDark, 8);
-    stem.position.set(px + dx / 2, 0.42 + (top - 0.42) / 2, pz + dz / 2);
-    const cluster = sphere(r, P.leaf);
-    cluster.position.set(px + dx, top, pz + dz);
-    cluster.scale.set(1, 1.2, 1);
-    g.add(stem, cluster);
-  }
-  root.add(g);
-}
-
-/* -------------------------------- mood lamp ------------------------------- */
-
-function buildLamp(root) {
-  const g = new THREE.Group();
-  const x = 2.8;
-  const z = 1.75;
-
-  const base = cylinder(0.22, 0.28, 0.07, P.lampPole, 16);
-  base.position.set(x, 0.035, z);
-  const pole = cylinder(0.033, 0.033, 2.1, P.lampPole, 10);
-  pole.position.set(x, 1.1, z);
-  const collar = cylinder(0.05, 0.05, 0.08, 0xa8845c, 10);
-  collar.position.set(x, 2.12, z);
-  g.add(base, pole, collar);
-
-  const shadeMat = new THREE.MeshStandardMaterial({
-    color: P.lampShade,
-    emissive: P.lampShade,
-    emissiveIntensity: 0.0,
-    roughness: 1,
-    side: THREE.DoubleSide,
+  clothes.forEach((cl, i) => {
+    const hx = cx - 0.86 + i * 0.27;
+    const hanger = shadowed(
+      new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.012, 8, 12, Math.PI), mat(0x8f8d96, { roughness: 0.4, metalness: 0.6 }))
+    );
+    hanger.position.set(hx, rodY + 0.02, cz);
+    const shoulders = rbox(0.06, 0.05, cl.w2, cl.c, 0.02);
+    shoulders.position.set(hx, rodY - 0.08, cz);
+    const bodyC = rbox(0.05, cl.len, cl.w2 - 0.04, cl.c, 0.02);
+    bodyC.position.set(hx, rodY - 0.1 - cl.len / 2, cz);
+    bodyC.rotation.x = jitter(i) * 0.06 - 0.03;
+    g.add(hanger, shoulders, bodyC);
   });
-  const shade = shadowed(
-    new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.35, 0.4, 20, 1, true), shadeMat)
-  );
-  shade.position.set(x, 2.33, z);
-  const inner = new THREE.Mesh(new THREE.CircleGeometry(0.34, 20), shadeMat);
-  inner.rotation.x = Math.PI / 2;
-  inner.position.set(x, 2.14, z);
-  g.add(shade, inner);
 
-  const lampLight = new THREE.PointLight(0xffb066, 0.0, 8, 1.6);
-  lampLight.position.set(x, 2.2, z);
-  g.add(lampLight);
+  // shelf section (right of the divider): folded stacks
+  const shelfX = cx + 0.63;
+  for (const [sy, stack] of [
+    [1.35, [0xe8e4da, 0x9aa8b8]],
+    [2.15, [0x687a5c, 0xc9a26b, 0xe8e4da]],
+    [2.95, [0x5a6b8a]],
+  ]) {
+    const shelf = box(0.55, 0.05, d - 0.1, P.wardrobe);
+    shelf.position.set(shelfX, sy, cz);
+    g.add(shelf);
+    stack.forEach((c2, k) => {
+      const folded = rbox(0.42, 0.09, 0.4, c2, 0.03);
+      folded.position.set(shelfX, sy + 0.075 + k * 0.095, cz);
+      folded.rotation.y = jitter(k + sy) * 0.16 - 0.08;
+      g.add(folded);
+    });
+  }
 
   root.add(g);
-  return { shadeMat, lampLight };
 }
 
 /* --------------------------------- exports -------------------------------- */
@@ -840,15 +735,27 @@ export function buildRoom(scene) {
   const { screenLight, steamGroup, ledMat, ledLight } = buildDesk(root);
   buildBed(root);
   buildWardrobe(root);
-  buildRug(root);
-  const { bulbsMat } = buildStringLights(root);
-  buildWallDecor(root);
-  buildPlant(root);
-  const { shadeMat, lampLight } = buildLamp(root);
+
+  // micro-texture pass: tint-friendly grain/gradients on the shared cached
+  // materials, so flat colors stop reading as clay
+  const texFor = {
+    wood: [P.wood, P.woodDark, P.woodLight, P.doorWood, P.wardrobe, P.wardrobeDoor, P.terraceWood],
+    plaster: [P.wallBack, P.wallLeft],
+    fabric: [P.bedMattress, P.bedBlanket, P.pillowA, 0xdfd7c4],
+  };
+  const texMap = { wood: getWoodTexture(), plaster: getPlasterTexture(), fabric: getFabricTexture() };
+  for (const [kind, colors] of Object.entries(texFor)) {
+    for (const [key, m] of matCache) {
+      if (colors.some((c) => key.startsWith(`${c}|`))) {
+        m.map = texMap[kind];
+        m.needsUpdate = true;
+      }
+    }
+  }
 
   scene.add(root);
 
-  return { root, screenLight, steamGroup, ledMat, ledLight, shadeMat, lampLight, bulbsMat };
+  return { root, screenLight, steamGroup, ledMat, ledLight };
 }
 
 export function updateSteam(steamGroup, t) {
