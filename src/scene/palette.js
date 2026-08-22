@@ -24,10 +24,10 @@ export const PALETTE = {
   doorWood: 0x9c6b47,
   doorFrame: 0xf0e6d8,
 
-  wardrobe: 0xc9a878,
-  wardrobeDoor: 0xe8ddc9,
+  wardrobe: 0xb08a5e,
+  wardrobeDoor: 0xd9c6a4,
 
-  bedBlanket: 0x5d7355,
+  bedBlanket: 0x5d6b80,
   bedMattress: 0xe8e0d0,
   pillowA: 0xd97f5f,
 

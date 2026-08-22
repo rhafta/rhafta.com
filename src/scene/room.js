@@ -7,7 +7,7 @@ import { getWoodTexture, getPlasterTexture, getFabricTexture } from './textures.
 // Solid walls at the back (-z) and left (-x); low stub walls on the open
 // sides; the terrace extends past the front (+z) edge.
 const R = 3.3;
-const WALL_H = 4.8;
+const WALL_H = 4.3;
 const WALL_T = 0.35;
 const STUB_H = 0.55;
 
@@ -241,7 +241,7 @@ function buildEntranceDoor(root) {
   const g = new THREE.Group();
   const cx = -2.25;
   const w = 1.5;
-  const h = 3.9;
+  const h = 3.55;
   const z = -R + 0.06;
 
   const jambL = box(0.16, h + 0.16, 0.14, P.doorFrame);
@@ -471,12 +471,12 @@ function buildDesk(root) {
 
   /* portrait monitor, angled toward the chair */
   const port = new THREE.Group();
-  const bezel2 = rbox(0.06, 1.52, 0.82, P.deviceDark, 0.02);
-  bezel2.position.y = 2.42;
-  const scr2 = screenMesh(0.72, 1.4, 'portrait');
-  scr2.position.set(0.035, 2.42, 0);
-  const stand2 = box(0.06, 0.65, 0.12, P.deviceDark);
-  stand2.position.set(-0.04, 1.35 + 0.32, 0);
+  const bezel2 = rbox(0.06, 1.36, 0.74, P.deviceDark, 0.02);
+  bezel2.position.y = 2.32;
+  const scr2 = screenMesh(0.64, 1.24, 'portrait');
+  scr2.position.set(0.035, 2.32, 0);
+  const stand2 = box(0.06, 0.6, 0.12, P.deviceDark);
+  stand2.position.set(-0.04, 1.34 + 0.32, 0);
   const base2 = rbox(0.32, 0.03, 0.5, P.deviceDark, 0.01);
   base2.position.set(0, surf + 0.015, 0);
   port.add(bezel2, scr2, stand2, base2);
@@ -562,6 +562,47 @@ function buildDesk(root) {
   }
   g.add(steamGroup);
 
+  // PC tower under the desk with an RGB front strip
+  const pc = new THREE.Group();
+  const pcCase = rbox(0.4, 0.95, 0.55, 0x26242c, 0.02);
+  pcCase.position.y = 0.535;
+  const pcFrontMat = new THREE.MeshStandardMaterial({
+    color: P.led,
+    emissive: P.led,
+    emissiveIntensity: 1.1,
+    roughness: 1,
+  });
+  const pcStrip = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.7, 0.04), pcFrontMat);
+  pcStrip.position.set(0.2, 0.55, 0.18);
+  const powerDot = new THREE.Mesh(
+    new THREE.BoxGeometry(0.015, 0.025, 0.025),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.8 })
+  );
+  powerDot.position.set(0.2, 0.94, -0.16);
+  for (const fz of [-0.14, 0.14]) {
+    const foot = box(0.32, 0.06, 0.08, 0x1c1a22);
+    foot.position.set(0, 0.03, fz);
+    pc.add(foot);
+  }
+  pc.add(pcCase, pcStrip, powerDot);
+  pc.position.set(cx - 0.3, 0, cz - 0.7);
+  g.add(pc);
+
+  // the debugging duck, on duty next to the portrait monitor
+  const duck = new THREE.Group();
+  const duckBody = sphere(0.055, 0xf2c94c);
+  duckBody.scale.set(1.15, 0.9, 1);
+  duckBody.position.y = 0.05;
+  const duckHead = sphere(0.038, 0xf2c94c);
+  duckHead.position.set(-0.045, 0.115, 0);
+  const beak = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.018, 0.035, 8), mat(0xe8863a)));
+  beak.rotation.z = Math.PI / 2;
+  beak.position.set(-0.085, 0.11, 0);
+  duck.add(duckBody, duckHead, beak);
+  duck.position.set(cx - 0.42, surf, cz + 0.85);
+  duck.rotation.y = -0.5;
+  g.add(duck);
+
   // headphones on a small stand at the back corner
   const hp = new THREE.Group();
   const hpPole = cylinder(0.025, 0.025, 0.32, P.deviceDark, 8);
@@ -625,7 +666,7 @@ function buildBed(root) {
   blanket.position.set(x, 0.71, zc + 0.7);
   const overhang = rbox(w - 0.06, 0.45, 0.13, P.bedBlanket, 0.05);
   overhang.position.set(x, 0.52, zc + 1.98);
-  const stripe = box(w - 0.04, 0.03, 0.12, 0x76896a);
+  const stripe = box(w - 0.04, 0.03, 0.12, 0x6b7a94);
   stripe.position.set(x, 0.83, zc + 1.15);
   const fold = rbox(w - 0.06, 0.11, 0.45, 0xdfd7c4, 0.04);
   fold.position.set(x, 0.8, zc - 0.75);
@@ -642,13 +683,14 @@ function buildBed(root) {
 /* -------------------------------- wardrobe -------------------------------- */
 
 // open wardrobe: no doors, the interior shows hanging clothes and folded
-// stacks (clothing-rack style, facing into the room)
+// stacks. Per the floor plan it sits below the bed's foot in the front-right
+// corner, opening toward the terrace so the interior stays visible.
 function buildWardrobe(root) {
   const g = new THREE.Group();
-  const cx = -0.2;
-  const cz = -2.96;
+  const cx = 2.4;
+  const cz = 2.45;
   const w = 1.8;
-  const h = 3.55;
+  const h = 3.4;
   const d = 0.6;
   const t = 0.07;
   const zFront = cz + d / 2;
@@ -724,6 +766,133 @@ function buildWardrobe(root) {
   root.add(g);
 }
 
+/* --------------------------- dev wall & decorations ------------------------ */
+
+function makeArtTexture(kind) {
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  if (kind === 'contrib') {
+    // GitHub-style contribution graph
+    c.width = 232;
+    c.height = 64;
+    ctx.fillStyle = '#161b22';
+    ctx.fillRect(0, 0, c.width, c.height);
+    const greens = ['#0e4429', '#006d32', '#26a641', '#39d353'];
+    for (let col = 0; col < 30; col++) {
+      for (let row = 0; row < 7; row++) {
+        const r = jitter(col * 7 + row + 5);
+        ctx.fillStyle = Math.abs(r) < 0.32 ? '#21262d' : greens[Math.abs(Math.floor(r * 11)) % 4];
+        ctx.fillRect(6 + col * 7.4, 5 + row * 7.4, 6, 6);
+      }
+    }
+  } else {
+    // terminal art print
+    c.width = 96;
+    c.height = 128;
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#30363d';
+    ctx.fillRect(0, 0, c.width, 12);
+    for (const [i, w2] of [0.5, 0.3, 0.65, 0.4, 0.55, 0.25].entries()) {
+      ctx.fillStyle = i === 2 ? '#e3b341' : '#3fb950';
+      ctx.globalAlpha = 0.85;
+      ctx.fillRect(10, 24 + i * 13, c.width * w2, 4);
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#3fb950';
+    ctx.font = 'bold 26px monospace';
+    ctx.fillText('>_', 10, 118);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function wallFrame(root, w, h, tex, x, y) {
+  const frame = rbox(w + 0.1, h + 0.1, 0.05, 0x2c2a33, 0.01);
+  frame.position.set(x, y, -R + 0.09);
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex }));
+  art.material.toneMapped = false;
+  art.position.set(x, y, -R + 0.12);
+  root.add(frame, art);
+}
+
+// bookcase on the back wall between the door and the bed, stocked with
+// programming books, a rubber-duck sibling and a tiny bit of clutter
+function buildBookshelf(root) {
+  const g = new THREE.Group();
+  const cx = -0.25;
+  const cz = -2.99;
+  const w = 1.7;
+  const h = 2.85;
+  const d = 0.5;
+  const t = 0.07;
+
+  const sideL = rbox(t, h, d, P.wood, 0.02);
+  sideL.position.set(cx - w / 2 + t / 2, h / 2 + 0.05, cz);
+  const sideR = sideL.clone();
+  sideR.position.x = cx + w / 2 - t / 2;
+  const topP = rbox(w, t, d, P.wood, 0.02);
+  topP.position.set(cx, h + 0.05 - t / 2, cz);
+  const back = box(w - 0.08, h - 0.1, 0.04, P.woodDark);
+  back.position.set(cx, h / 2 + 0.05, cz - d / 2 + 0.05);
+  g.add(sideL, sideR, topP, back);
+
+  const shelfYs = [0.18, 1.08, 1.98];
+  for (const sy of shelfYs) {
+    const shelf = box(w - 0.12, 0.06, d - 0.06, P.wood);
+    shelf.position.set(cx, sy, cz);
+    g.add(shelf);
+  }
+
+  const spineColors = [0xc97b63, 0x88a37a, 0xd9b26a, 0x7a89a8, 0xd97f5f, 0x7fb4ca, 0x9aa8b8, 0xb5533c];
+  const rowBooks = (sy, count, startX, lean) => {
+    let bx = startX;
+    for (let i = 0; i < count; i++) {
+      const bh = 0.5 + Math.abs(jitter(i + sy * 9)) * 0.16;
+      const bw = 0.09 + Math.abs(jitter(i * 3 + sy)) * 0.05;
+      const book = rbox(bw, bh, 0.36, spineColors[Math.abs(Math.floor(jitter(i * 5 + sy) * 17)) % spineColors.length], 0.012);
+      book.position.set(bx + bw / 2, sy + 0.03 + bh / 2, cz + 0.02);
+      if (lean && i === count - 1) {
+        book.rotation.z = -0.24;
+        book.position.x += 0.05;
+        book.position.y -= 0.03;
+      }
+      g.add(book);
+      bx += bw + 0.015;
+    }
+    return bx;
+  };
+
+  // bottom row: full shelf of books
+  rowBooks(0.18, 9, cx - w / 2 + 0.12, true);
+  // middle row: books + horizontal stack
+  const endX = rowBooks(1.08, 5, cx - w / 2 + 0.12, false);
+  for (let i = 0; i < 3; i++) {
+    const flat = rbox(0.34, 0.07, 0.42 - i * 0.03, spineColors[(i * 3 + 1) % spineColors.length], 0.012);
+    flat.position.set(endX + 0.22, 1.145 + i * 0.075, cz + 0.02);
+    flat.rotation.y = jitter(i + 40) * 0.1;
+    g.add(flat);
+  }
+  // top row: a few leaning books + the shelf duck
+  rowBooks(1.98, 4, cx - w / 2 + 0.12, true);
+  const duckB = sphere(0.07, 0xf2c94c);
+  duckB.scale.set(1.15, 0.9, 1);
+  duckB.position.set(cx + 0.5, 2.1, cz + 0.02);
+  const duckH = sphere(0.048, 0xf2c94c);
+  duckH.position.set(cx + 0.44, 2.19, cz + 0.02);
+  const duckBeak = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.04, 8), mat(0xe8863a)));
+  duckBeak.rotation.z = Math.PI / 2;
+  duckBeak.position.set(cx + 0.39, 2.185, cz + 0.02);
+  g.add(duckB, duckH, duckBeak);
+
+  root.add(g);
+
+  // framed prints: contribution graph above the bookcase, terminal art above the bed
+  wallFrame(root, 1.16, 0.32, makeArtTexture('contrib'), cx, 3.45);
+  wallFrame(root, 0.52, 0.7, makeArtTexture('terminal'), 2.2, 3.3);
+}
+
 /* --------------------------------- exports -------------------------------- */
 
 export function buildRoom(scene) {
@@ -735,6 +904,7 @@ export function buildRoom(scene) {
   const { screenLight, steamGroup, ledMat, ledLight } = buildDesk(root);
   buildBed(root);
   buildWardrobe(root);
+  buildBookshelf(root);
 
   // micro-texture pass: tint-friendly grain/gradients on the shared cached
   // materials, so flat colors stop reading as clay

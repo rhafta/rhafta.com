@@ -48,6 +48,7 @@ export class DayNight {
     const day = 1 - n;
 
     this.scene.background.copy(this.bgDay).lerp(this.bgNight, n);
+    this.scene.environmentIntensity = 0.05 + 0.23 * day;
 
     this.hemiLight.color.copy(this.hemiDay).lerp(this.hemiNight, n);
     this.hemiLight.intensity = 0.55 + 0.65 * day;

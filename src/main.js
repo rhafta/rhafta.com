@@ -4,6 +4,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { N8AOPass } from 'n8ao';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { buildRoom, updateSteam } from './scene/room.js';
 import { buildCharacter } from './scene/character.js';
 import { DayNight } from './scene/daynight.js';
@@ -19,6 +20,11 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 
 const scene = new THREE.Scene();
+
+// subtle image-based lighting so materials get gentle specular response
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.25;
 
 /* --------------------------------- camera --------------------------------- */
 
