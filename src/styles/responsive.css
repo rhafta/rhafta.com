@@ -1,0 +1,216 @@
+/* ── 좁은 화면 (세로로 길게 세운 전시실) ──────────────────
+   벽 한 면이 화면 폭의 94% 로 그려지므로, 벽 위의 글자는
+   "포스터"처럼 벽 폭 대비 훨씬 크게 잡아야 읽힌다.
+   ────────────────────────────────────────────────────────── */
+.app[data-compact] .wall__inner {
+  padding: calc(var(--u) * 9) 0 calc(var(--u) * 8);
+}
+
+.app[data-compact] .wall__tag {
+  font-size: calc(var(--u) * 2.3);
+  gap: calc(var(--u) * 1.6);
+}
+
+.app[data-compact] .wall__lead {
+  max-width: none;
+  margin-top: calc(var(--u) * 4);
+}
+
+.app[data-compact] .wall__title {
+  font-size: calc(var(--u) * 8.5);
+}
+
+.app[data-compact] .wall__intro {
+  margin-top: calc(var(--u) * 1.8);
+  font-size: calc(var(--u) * 3.3);
+  line-height: 1.7;
+}
+
+/* 액자 — 2열로 */
+.app[data-compact] .hang {
+  gap: calc(var(--u) * 5) calc(var(--u) * 4);
+  padding-top: calc(var(--u) * 3);
+}
+
+.app[data-compact] .hang--row,
+.app[data-compact] .hang--salon {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-items: center;
+  align-content: center;
+  --fh: calc(var(--u) * 26);
+}
+
+.app[data-compact] .hang--grid {
+  grid-template-columns: repeat(2, auto);
+  --fh: calc(var(--u) * 24);
+}
+
+.app[data-compact] .art {
+  transform: none;
+  gap: calc(var(--u) * 2);
+}
+
+.app[data-compact] .art__frame {
+  padding: calc(var(--u) * 1.4);
+}
+
+.app[data-compact] .art__mat {
+  padding: calc(var(--u) * 1.6);
+}
+
+.app[data-compact] .plate {
+  min-width: calc(var(--u) * 20);
+  max-width: calc(var(--u) * 44);
+  padding: calc(var(--u) * 1.1) calc(var(--u) * 1.6);
+}
+
+.app[data-compact] .plate__title {
+  font-size: calc(var(--u) * 3);
+}
+
+.app[data-compact] .plate__meta {
+  font-size: calc(var(--u) * 2.1);
+}
+
+/* 홀 */
+.app[data-compact] .hall__eyebrow {
+  font-size: calc(var(--u) * 2.3);
+}
+
+.app[data-compact] .hall__name {
+  font-size: calc(var(--u) * 17);
+}
+
+.app[data-compact] .hall__tagline {
+  margin-top: calc(var(--u) * 1.4);
+  font-size: calc(var(--u) * 3.8);
+}
+
+.app[data-compact] .hall__rule {
+  width: calc(var(--u) * 20);
+  margin: calc(var(--u) * 4.5) 0 calc(var(--u) * 4);
+}
+
+.app[data-compact] .hall__intro {
+  max-width: none;
+  font-size: calc(var(--u) * 3.4);
+  line-height: 1.85;
+}
+
+.app[data-compact] .marks {
+  gap: calc(var(--u) * 3);
+  margin-top: calc(var(--u) * 6);
+}
+
+.app[data-compact] .mark-link {
+  width: calc(var(--u) * 11);
+  height: calc(var(--u) * 11);
+}
+
+.app[data-compact] .mark-link svg,
+.app[data-compact] .mark-link .brand-letter {
+  width: calc(var(--u) * 4.8);
+  height: calc(var(--u) * 4.8);
+  font-size: calc(var(--u) * 4.8);
+}
+
+/* 소개 패널 */
+.app[data-compact] .panel {
+  margin-top: calc(var(--u) * 5);
+  padding: calc(var(--u) * 4.5) calc(var(--u) * 4);
+}
+
+.app[data-compact] .panel__body {
+  grid-template-columns: 1fr;
+  gap: calc(var(--u) * 4.5);
+}
+
+.app[data-compact] .panel__heading {
+  font-size: calc(var(--u) * 2.2);
+  padding-bottom: calc(var(--u) * 1.4);
+  margin-bottom: calc(var(--u) * 2);
+}
+
+.app[data-compact] .panel__list {
+  font-size: calc(var(--u) * 3);
+  gap: calc(var(--u) * 1.8);
+}
+
+/* 방명록 */
+.app[data-compact] .brass__note {
+  font-size: calc(var(--u) * 5.2);
+  max-width: none;
+}
+
+.app[data-compact] .brass__links {
+  flex-direction: column;
+  width: 100%;
+  gap: calc(var(--u) * 2);
+}
+
+.app[data-compact] .brass__link {
+  padding: calc(var(--u) * 2.2) calc(var(--u) * 3);
+}
+
+.app[data-compact] .brass__hint {
+  font-size: calc(var(--u) * 2);
+}
+
+.app[data-compact] .brass__label {
+  font-size: calc(var(--u) * 3.2);
+}
+
+@media (max-width: 880px) {
+  .nav__label {
+    display: none;
+  }
+
+  .nav__item {
+    padding: 9px 10px;
+  }
+
+  .now {
+    left: 50%;
+    bottom: calc(clamp(18px, 3vh, 34px) + 60px);
+    transform: translateX(-50%);
+  }
+
+  .hint {
+    bottom: calc(clamp(18px, 3vh, 34px) + 84px);
+  }
+
+  .detail__card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    max-height: 88vh;
+  }
+
+  .detail__art {
+    min-height: 0;
+    max-height: 40vh;
+    padding: 16px;
+  }
+
+  .detail__art img,
+  .detail__canvas {
+    border-width: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .mark__sub {
+    display: none;
+  }
+
+  .lights {
+    padding: 7px 11px;
+  }
+}
+
+/* 짧은 화면 — 안내 문구가 겹치지 않게 */
+@media (max-height: 620px) {
+  .hint {
+    display: none;
+  }
+}
