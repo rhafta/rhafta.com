@@ -12,18 +12,57 @@
 
 ```bash
 npm install
-npm run dev      # 개발 서버
-npm run build    # dist/ 에 정적 빌드
+npm run dev        # 개발 서버
+npm run build      # dist/ 에 정적 빌드 (타입체크 포함)
+npm run lint        # ESLint
+npm run typecheck   # 타입만 검사
 ```
 
 빌드 결과는 순수 정적 파일이라 Vercel, Netlify, GitHub Pages 어디에나 올릴 수 있다.
+
+## 코드 구조
+
+```
+src/
+  data/
+    types.ts        # 스키마 — "무엇을 적을 수 있는가"
+    content.ts       # 콘텐츠 — 실제로 적는 곳 (커스터마이징은 여기만)
+  components/
+    walls/           # 벽 kind 별 컴포넌트 (Hall/Gallery/Text/Contact)
+    Room.tsx          # 3D 방 자체 — 벽 개수로 n각형 기하를 계산
+    Artwork.tsx, Detail.tsx, Chrome.tsx, Icons.tsx, ExternalLink.tsx
+  hooks/
+    useRoomMetrics.ts  # 화면 크기 → 방 축척
+    useRoom.ts          # 회전 조작계 (아래 세 훅을 합성)
+    room/
+      useRotationState.ts    # 회전 상태 엔진 (heading, index, settle)
+      usePointerRotation.ts  # 드래그 / 스와이프
+      useWheelRotation.ts     # 마우스 휠
+      useKeyboardRotation.ts  # 키보드
+  lib/
+    art.ts     # tone/pattern → 절차적 추상 회화
+    format.ts   # 명패 텍스트 포맷
+```
+
+회전 로직을 입력 방식별로 나눈 이유: 드래그·휠·키보드는 서로 독립적인
+관심사라 한 훅에 있으면 어디를 고쳐도 나머지가 다칠까 걱정해야 한다.
+`useRotationState` 가 "엔진"(heading을 어떻게 움직이고 어디서 멈추는지)만
+알고, 나머지 세 훅은 그 엔진에 입력만 흘려보낸다.
+
+## 폰트
+
+Instrument Serif / Inter / JetBrains Mono 는 `@fontsource/*` 로 자체
+호스팅한다 (`src/main.tsx` 상단). Google Fonts 같은 외부 요청이 없어서
+첫 로딩이 더 빠르다. 굵기를 추가하려면 실제 쓰는 `font-weight` 값을
+확인하고 해당 `@fontsource/.../{weight}.css` 를 import 하면 된다 —
+안 쓰는 굵기를 받아오지 않는 것이 핵심이다.
 
 ---
 
 # 커스터마이징 가이드
 
-**모든 콘텐츠와 옵션은 `src/data/gallery.ts` 한 파일에 있다.**
-코드는 건드릴 필요 없다.
+**모든 콘텐츠와 옵션은 `src/data/content.ts` 한 파일에 있다.**
+(각 필드의 의미는 `src/data/types.ts` 의 주석 참고) 코드는 건드릴 필요 없다.
 
 ## 1. 벽 (전시실)
 

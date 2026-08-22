@@ -11,7 +11,7 @@
   --R: calc(var(--S) * var(--rf, 1));
   --E: calc(var(--A) * 0.5);
   --H: calc(var(--wall-h-raw) * var(--s));
-  --u: calc(var(--S) / 100 * var(--boost));
+  --u: calc(var(--S) / 100);
 
   position: fixed;
   inset: 0;

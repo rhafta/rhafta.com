@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react'
-import type { Artwork } from '../data/gallery'
+import type { Artwork } from '../data/types'
 import { paint } from '../lib/art'
+import { formatMeta } from '../lib/format'
+import { ExternalLink } from './ExternalLink'
 
 type Props = {
   item: Artwork | null
@@ -33,7 +35,7 @@ export function Detail({ item, onClose }: Props) {
       <article className="detail__card" data-scroll data-nodrag>
         <div className="detail__art" data-ratio={item.ratio ?? 'landscape'}>
           {item.image ? (
-            <img src={item.image} alt={item.title} />
+            <img src={item.image} alt={item.title} decoding="async" />
           ) : (
             <span className="detail__canvas" style={paint(item.tone, item.pattern)} />
           )}
@@ -43,7 +45,7 @@ export function Detail({ item, onClose }: Props) {
             닫기 <span aria-hidden="true">✕</span>
           </button>
           <h2 className="detail__title">{item.title}</h2>
-          <p className="detail__meta">{[item.medium, item.year].filter(Boolean).join('  ·  ')}</p>
+          <p className="detail__meta">{formatMeta(item.medium, item.year)}</p>
           {item.tags && (
             <ul className="detail__tags">
               {item.tags.map((t) => (
@@ -56,10 +58,10 @@ export function Detail({ item, onClose }: Props) {
             <ul className="detail__links">
               {item.links.map((l) => (
                 <li key={l.label}>
-                  <a href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+                  <ExternalLink href={l.href}>
                     {l.label}
                     <span aria-hidden="true">↗</span>
-                  </a>
+                  </ExternalLink>
                 </li>
               ))}
             </ul>

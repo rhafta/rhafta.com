@@ -1,5 +1,5 @@
-import type { Wall } from '../data/gallery'
-import { curator, settings } from '../data/gallery'
+import type { Wall } from '../data/types'
+import { curator, settings } from '../data/content'
 
 type Props = {
   walls: Wall[]

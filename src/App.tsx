@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState, type CSSProperties } from 'react'
 import { Chrome } from './components/Chrome'
 import { Detail } from './components/Detail'
 import { Room } from './components/Room'
-import { settings, walls, type Artwork } from './data/gallery'
-import { useMetrics, useRoom } from './hooks/useRoom'
+import { settings, walls } from './data/content'
+import type { Artwork } from './data/types'
+import { useRoom } from './hooks/useRoom'
+import { useMetrics } from './hooks/useRoomMetrics'
 
 /**
  * 라이트(주간) 모드 스위치.
@@ -16,19 +18,16 @@ export default function App() {
   const metrics = useMetrics()
   const [detail, setDetail] = useState<Artwork | null>(null)
   const [entered, setEntered] = useState(false)
-  const [night, setNight] = useState(NIGHT_ONLY)
+  /* 조명 상태 기억 (야간 전용일 때는 항상 야간) — 마운트 후 setState 로 뒤집지
+     않도록 localStorage 값을 useState 초기화 함수에서 바로 읽는다. */
+  const [night, setNight] = useState(
+    () => NIGHT_ONLY || localStorage.getItem('rhafta:lights') === 'night',
+  )
 
   const { roomRef, index, turn, goTo, dragging, touched } = useRoom({
     count: walls.length,
     locked: detail !== null,
   })
-
-  /* 조명 상태 기억 (야간 전용일 때는 항상 야간) */
-  useEffect(() => {
-    if (NIGHT_ONLY) return
-    const saved = localStorage.getItem('rhafta:lights')
-    if (saved) setNight(saved === 'night')
-  }, [])
 
   const toggleNight = useCallback(() => {
     setNight((v) => {

@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
-import type { Artwork } from '../data/gallery'
+import type { Artwork } from '../data/types'
 import { paint } from '../lib/art'
+import { formatMeta } from '../lib/format'
 
 type Props = {
   item: Artwork
@@ -35,7 +36,13 @@ export function Frame({ item, onOpen, offset = 0 }: Props) {
         <span className="art__frame">
           <span className="art__mat">
             {item.image ? (
-              <img className="art__canvas" src={item.image} alt={item.title} loading="lazy" />
+              <img
+                className="art__canvas"
+                src={item.image}
+                alt={item.title}
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <span className="art__canvas" style={paint(item.tone, item.pattern)} aria-hidden="true" />
             )}
@@ -46,9 +53,7 @@ export function Frame({ item, onOpen, offset = 0 }: Props) {
       {item.plate !== false && (
         <figcaption className="plate">
           <span className="plate__title">{item.title}</span>
-          <span className="plate__meta">
-            {[item.medium, item.year].filter(Boolean).join('  ·  ')}
-          </span>
+          <span className="plate__meta">{formatMeta(item.medium, item.year)}</span>
         </figcaption>
       )}
     </figure>
