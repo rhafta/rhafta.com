@@ -1,0 +1,180 @@
+/* ── 토큰 ─────────────────────────────────────────────────── */
+:root {
+  --font-display: 'Instrument Serif', 'Apple SD Gothic Neo', 'Noto Serif KR', ui-serif, Georgia, serif;
+  --font-body: 'Inter', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --turn: 820ms;
+}
+
+/* 주간 개장 — 빛이 잘 드는 전시관 */
+.app[data-mode='day'] {
+  --plaster: #e7e1d6;
+  --plaster-hi: #f4efe6;
+  --plaster-lo: #cfc7b8;
+  --floor-a: #c3b09a;
+  --floor-b: #8e7a64;
+  --ceiling-a: #f6f2ea;
+  --ceiling-b: #ddd6c9;
+  --ink: #211e19;
+  --ink-soft: #4a443b;
+  --muted: #7d7466;
+  --hairline: rgba(33, 30, 25, 0.16);
+  --brass: #9a7a3c;
+  --brass-hi: #c9a45c;
+  --frame-a: #2b2620;
+  --frame-b: #574b3c;
+  --plate-bg: rgba(255, 253, 248, 0.82);
+  --beam: 0.22;
+  --sky: #cdc4b6;
+  --scrim: rgba(30, 26, 21, 0.62);
+}
+
+/* 야간 개장 — 따뜻한 조명만 남은 전시관 (현재 상시 적용) */
+.app[data-mode='night'] {
+  --plaster: #292219;
+  --plaster-hi: #3b3226;
+  --plaster-lo: #17110c;
+  --floor-a: #382a1d;
+  --floor-b: #0d0906;
+  --ceiling-a: #1d1610;
+  --ceiling-b: #0a0705;
+  --ink: #f6eddc;
+  --ink-soft: #d9ccb5;
+  --muted: #97896e;
+  --hairline: rgba(246, 237, 220, 0.15);
+  --brass: #c99a4e;
+  --brass-hi: #eec987;
+  --frame-a: #191209;
+  --frame-b: #4a3a27;
+  --plate-bg: rgba(36, 29, 21, 0.82);
+  --beam: 0.9;
+  --sky: #0b0806;
+  --scrim: rgba(6, 4, 3, 0.8);
+}
+
+/* ── 분위기 프리셋 (gallery.ts settings.mood) ──
+   야간 팔레트 위에 벽·바닥 색만 갈아끼운다 */
+.app[data-mood='neutral'][data-mode='night'] {
+  --plaster: #232220;
+  --plaster-hi: #34322e;
+  --plaster-lo: #131211;
+  --floor-a: #2c2823;
+  --floor-b: #0b0a09;
+  --ceiling-a: #191714;
+  --ceiling-b: #090807;
+}
+
+.app[data-mood='cool'][data-mode='night'] {
+  --plaster: #1f2226;
+  --plaster-hi: #2e3238;
+  --plaster-lo: #101214;
+  --floor-a: #262a2f;
+  --floor-b: #090a0c;
+  --ceiling-a: #15181c;
+  --ceiling-b: #070809;
+}
+
+@property --heading {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0b0806;
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass-hi);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--sky);
+  transition: background 700ms var(--ease);
+}
+
+.app[data-dragging] {
+  cursor: grabbing;
+}
+
+/* 전체에 얹히는 미세한 입자감 */
+.app__grain {
+  position: fixed;
+  inset: -10%;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+
+.app[data-mode='night'] .app__grain {
+  opacity: 0.22;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.12s !important;
+  }
+}

@@ -1,0 +1,449 @@
+/* ── 액자 배치 ─────────────────────────────────────────── */
+.hang {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 3);
+  padding-top: calc(var(--u) * 1.5);
+}
+
+.hang--row {
+  --fh: calc(var(--u) * 19);
+}
+
+.hang--salon {
+  --fh: calc(var(--u) * 17);
+  gap: calc(var(--u) * 2.6);
+}
+
+.hang--grid {
+  --fh: calc(var(--u) * 13.5);
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: center;
+  align-content: center;
+  align-items: start;
+  gap: calc(var(--u) * 2.2) calc(var(--u) * 3);
+}
+
+.hang--single {
+  --fh: calc(var(--u) * 30);
+}
+
+/* ── 작품 ───────────────────────────────────────────────── */
+.art {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 1.1);
+  transform: translateY(calc(var(--offset, 0) * var(--u)));
+}
+
+.art[data-ratio='landscape'] {
+  --ar: 4 / 3;
+}
+.art[data-ratio='portrait'] {
+  --ar: 3 / 4;
+}
+.art[data-ratio='square'] {
+  --ar: 1 / 1;
+}
+
+.art__hit {
+  position: relative;
+  display: block;
+  cursor: zoom-in;
+  transition: transform 500ms var(--ease);
+}
+
+.art__hit:hover {
+  transform: translateY(calc(var(--u) * -0.4));
+}
+
+.art__lamp {
+  position: absolute;
+  left: 50%;
+  bottom: -12%;
+  width: 175%;
+  height: 225%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    46% 44% at 50% 36%,
+    rgba(255, 212, 148, 0.34),
+    rgba(255, 202, 136, 0.1) 58%,
+    transparent 76%
+  );
+  pointer-events: none;
+  filter: blur(calc(var(--u) * 1));
+}
+
+.art__frame {
+  position: relative;
+  display: block;
+  height: calc(var(--fh) * var(--scale, 1));
+  aspect-ratio: var(--ar);
+  padding: calc(var(--u) * 0.62);
+  background: linear-gradient(178deg, var(--frame-b), var(--frame-a) 62%);
+  box-shadow:
+    /* 벽에 지는 접촉 그림자 */
+    0 calc(var(--u) * 1.4) calc(var(--u) * 2.6) rgba(0, 0, 0, 0.55),
+    0 calc(var(--u) * 0.4) calc(var(--u) * 0.8) rgba(0, 0, 0, 0.45),
+    /* 위에서 받는 빛의 테두리 */
+    inset 0 1px 0 rgba(255, 226, 170, 0.32),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 500ms var(--ease);
+}
+
+.art__hit:hover .art__frame {
+  box-shadow:
+    0 calc(var(--u) * 2.2) calc(var(--u) * 3.6) rgba(0, 0, 0, 0.6),
+    0 calc(var(--u) * 0.5) calc(var(--u) * 1) rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 226, 170, 0.42),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+.art__mat {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: calc(var(--u) * 0.75);
+  background: linear-gradient(180deg, #fbf8f1, #ece5d8);
+  box-shadow: inset 0 0 calc(var(--u) * 0.8) rgba(0, 0, 0, 0.18);
+}
+
+.app[data-mode='night'] .art__mat {
+  background: linear-gradient(180deg, #e9e2d5, #cfc6b6);
+}
+
+.art__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22);
+}
+
+.art__glass {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(118deg, rgba(255, 244, 222, 0.16) 0 20%, transparent 40%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* 명패 */
+.plate {
+  align-self: center;
+  min-width: calc(var(--u) * 9);
+  max-width: calc(var(--u) * 26);
+  padding: calc(var(--u) * 0.5) calc(var(--u) * 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 0.15);
+  text-align: center;
+  background: var(--plate-bg);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 calc(var(--u) * 0.2) calc(var(--u) * 0.5) rgba(0, 0, 0, 0.14);
+}
+
+.plate__title {
+  font-size: calc(var(--u) * 1.02);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+.plate__meta {
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 0.68);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* ── 00 홀 ─────────────────────────────────────────────── */
+.wall__inner--hall {
+  align-items: center;
+  text-align: center;
+}
+
+.hall {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 0.4);
+}
+
+.hall__eyebrow {
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 0.9);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-left: 0.42em;
+}
+
+.hall__name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: calc(var(--u) * 12);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28),
+    0 calc(var(--u) * 0.3) calc(var(--u) * 0.9) rgba(0, 0, 0, 0.16);
+}
+
+.hall__tagline {
+  margin-top: calc(var(--u) * 0.4);
+  font-size: calc(var(--u) * 1.5);
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
+
+.hall__rule {
+  width: calc(var(--u) * 9);
+  height: 1px;
+  margin: calc(var(--u) * 2.2) 0 calc(var(--u) * 1.8);
+  background: linear-gradient(90deg, transparent, var(--brass), transparent);
+}
+
+.hall__intro {
+  max-width: calc(var(--u) * 40);
+  font-size: calc(var(--u) * 1.12);
+  line-height: 1.8;
+  color: var(--ink-soft);
+  opacity: 0.85;
+}
+
+.marks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--u) * 1.6);
+  margin-top: calc(var(--u) * 3);
+}
+
+/* 흑백 로고 마크 — 벽에 음각으로 박힌 금속 심벌 */
+.mark-link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 4.6);
+  height: calc(var(--u) * 4.6);
+  border-radius: 50%;
+  color: var(--ink-soft);
+  border: 1px solid var(--hairline);
+  background:
+    radial-gradient(120% 120% at 30% 22%, rgba(255, 255, 255, 0.07), transparent 55%),
+    rgba(0, 0, 0, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 196, 0.1),
+    inset 0 calc(var(--u) * -0.15) calc(var(--u) * 0.4) rgba(0, 0, 0, 0.5),
+    0 calc(var(--u) * 0.5) calc(var(--u) * 1) rgba(0, 0, 0, 0.4);
+  transition:
+    color 350ms var(--ease),
+    transform 350ms var(--ease),
+    border-color 350ms var(--ease),
+    box-shadow 350ms var(--ease);
+}
+
+.mark-link svg {
+  width: calc(var(--u) * 2);
+  height: calc(var(--u) * 2);
+  display: block;
+}
+
+.mark-link .brand-letter {
+  font-family: var(--font-display);
+  font-size: calc(var(--u) * 2);
+  line-height: 1;
+}
+
+.mark-link:hover {
+  color: var(--brass-hi);
+  border-color: var(--brass);
+  transform: translateY(calc(var(--u) * -0.3));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 196, 0.14),
+    inset 0 calc(var(--u) * -0.15) calc(var(--u) * 0.4) rgba(0, 0, 0, 0.5),
+    0 calc(var(--u) * 0.9) calc(var(--u) * 1.6) rgba(0, 0, 0, 0.5),
+    0 0 calc(var(--u) * 1.8) rgba(238, 201, 135, 0.18);
+}
+
+/* ── 04 소개 패널 ──────────────────────────────────────── */
+.panel {
+  position: relative;
+  flex: 0 0 auto;
+  margin-top: calc(var(--u) * 3.2);
+  padding: calc(var(--u) * 3) calc(var(--u) * 3.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.22));
+  border: 1px solid var(--hairline);
+  box-shadow:
+    0 calc(var(--u) * 1.4) calc(var(--u) * 2.6) rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+}
+
+.app[data-mode='night'] .panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+}
+
+.panel__lamp {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 216, 158, 0.07), transparent 42%);
+  pointer-events: none;
+}
+
+.panel__body {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--u) * 3.2);
+  width: 100%;
+}
+
+.panel__heading {
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 0.86);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--brass);
+  padding-bottom: calc(var(--u) * 0.9);
+  margin-bottom: calc(var(--u) * 1.2);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 0.85);
+  font-size: calc(var(--u) * 1.08);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ── 05 방명록 ─────────────────────────────────────────── */
+.wall__inner--contact {
+  align-items: center;
+  text-align: center;
+}
+
+.wall__inner--contact .wall__lead {
+  text-align: center;
+  max-width: none;
+}
+
+.brass {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 2.4);
+  width: 100%;
+}
+
+.brass__lamp {
+  position: absolute;
+  inset: -10% -30%;
+  background: radial-gradient(46% 42% at 50% 42%, rgba(255, 216, 158, 0.1), transparent 70%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.brass__note {
+  position: relative;
+  max-width: calc(var(--u) * 38);
+  font-family: var(--font-display);
+  font-size: calc(var(--u) * 2.2);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.brass__links {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--u) * 1.2);
+}
+
+.brass__link {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 0.25);
+  padding: calc(var(--u) * 1.1) calc(var(--u) * 1.8);
+  border: 1px solid var(--brass);
+  background: rgba(255, 255, 255, 0.06);
+  transition:
+    background 350ms var(--ease),
+    transform 350ms var(--ease);
+}
+
+.brass__link:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(calc(var(--u) * -0.2));
+}
+
+.brass__hint {
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 0.72);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.brass__label {
+  font-size: calc(var(--u) * 1.15);
+  color: var(--ink);
+}
+
+/* 홀의 벽 태그는 가운데 정렬 안쪽에서도 왼쪽에 붙는다 */
+.wall__tagline-row {
+  width: 100%;
+  display: flex;
+}
+
+
+/* ── 액자 변형 (gallery.ts 의 frame 옵션) ─────────────────── */
+.art[data-frame='gilded'] .art__frame {
+  background: linear-gradient(
+    172deg,
+    color-mix(in srgb, var(--brass-hi) 90%, #fff),
+    var(--brass) 40%,
+    color-mix(in srgb, var(--brass) 55%, #000) 100%
+  );
+}
+
+.art[data-frame='light'] .art__frame {
+  background: linear-gradient(178deg, #b8a488, #77644c 65%);
+}
+
+.art[data-frame='thin'] .art__frame {
+  padding: calc(var(--u) * 0.22);
+  background: #0c0a08;
+}
+
+/* 매트 없이 그림을 꽉 채우기 (mat: false) */
+.art[data-nomat] .art__mat {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
