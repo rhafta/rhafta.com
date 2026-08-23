@@ -26,6 +26,7 @@ export default function App() {
 
   const { roomRef, index, turn, goTo, dragging, touched } = useRoom({
     count: walls.length,
+    turnMs: settings.turnMs ?? 820,
     locked: detail !== null,
   })
 
