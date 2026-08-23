@@ -1,8 +1,10 @@
 /* ── 토큰 ─────────────────────────────────────────────────── */
 :root {
-  --font-display: 'Instrument Serif', 'Apple SD Gothic Neo', 'Noto Serif KR', ui-serif, Georgia, serif;
-  --font-body: 'Inter', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  /* 라틴 글자는 앞쪽 글꼴이, 한글은 Pretendard 가 맡는다.
+     (font-family 폴백은 글자 단위로 적용된다) */
+  --font-display: 'Instrument Serif', 'Pretendard Variable', 'Apple SD Gothic Neo', ui-serif, Georgia, serif;
+  --font-body: 'Inter', 'Pretendard Variable', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Pretendard Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --turn: 820ms;
@@ -110,12 +112,16 @@ body {
 
 body {
   margin: 0;
-  background: #0b0806;
+  background: #080807;
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overscroll-behavior: none;
+  /* 한글은 어절 단위로 끊어야 읽힌다. 이걸 안 걸면 단어 중간에서
+     줄이 바뀌어 아마추어처럼 보인다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 button {

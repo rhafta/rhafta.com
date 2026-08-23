@@ -71,7 +71,7 @@ export function Chrome({
                 aria-current={i === index ? 'true' : undefined}
               >
                 <span className="nav__no">{w.no}</span>
-                <span className="nav__label">{compact ? w.nameKo : w.name}</span>
+                <span className="nav__label">{w.name}</span>
               </button>
             </li>
           ))}
@@ -90,7 +90,7 @@ export function Chrome({
 
       <p className="now" aria-live="polite">
         <span className="now__no">{current.no}</span>
-        <span className="now__name">{current.nameKo}</span>
+        <span className="now__name">{current.name}</span>
       </p>
     </>
   )

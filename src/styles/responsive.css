@@ -7,8 +7,12 @@
 }
 
 .app[data-compact] .wall__tag {
-  font-size: calc(var(--u) * 2.3);
-  gap: calc(var(--u) * 1.6);
+  font-size: calc(var(--u) * 2.1);
+  gap: calc(var(--u) * 1.4);
+}
+
+.app[data-compact] .wall__tag-rule {
+  width: calc(var(--u) * 4);
 }
 
 .app[data-compact] .wall__lead {
@@ -21,9 +25,9 @@
 }
 
 .app[data-compact] .wall__intro {
-  margin-top: calc(var(--u) * 1.8);
-  font-size: calc(var(--u) * 3.3);
-  line-height: 1.7;
+  margin-top: calc(var(--u) * 2.2);
+  font-size: calc(var(--u) * 3.2);
+  line-height: 1.85;
 }
 
 /* 액자 — 2열로 */
@@ -139,7 +143,8 @@
 
 /* 방명록 */
 .app[data-compact] .brass__note {
-  font-size: calc(var(--u) * 5.2);
+  font-size: calc(var(--u) * 3.4);
+  line-height: 1.8;
   max-width: none;
 }
 

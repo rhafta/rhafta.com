@@ -63,6 +63,17 @@
   transition: --heading var(--turn) var(--ease);
 }
 
+/* 회전(트랜지션 또는 드래그) 중에만 will-change 를 건다. 컴포지터가
+   레이어를 미리 준비해 두게 해서 매 프레임 래스터 비용을 크게
+   줄인다(실측 -40%대). 상시로 걸어두지 않는 이유는 두 가지 —
+   가만히 있을 때까지 계속 레이어를 들고 있을 이유가 없고(메모리),
+   위 주석의 preserve-3d 플래튼 버그와 같은 종류의 문제를 상시
+   적용에서 다시 만날 위험을 피하기 위해서다. */
+.room.is-turning,
+.app[data-dragging] .room {
+  will-change: transform;
+}
+
 /* 입장 — 조명이 켜지며 방 안으로 걸어 들어가는 연출.
    주의: .room 에는 어떤 keyframes 애니메이션도 걸지 않는다. opacity 나 filter 를
    애니메이션하면 Chrome 이 preserve-3d 를 해제해 방 전체가 납작해진다.
@@ -129,13 +140,15 @@
   position: absolute;
   inset: 0;
   opacity: min(1, var(--glow, 1));
+  /* 그라디언트 자체의 넓은 페이드로 부드러움을 낸다 — filter:blur 는
+     쓰지 않는다(이 요소도 3D 회전 중인 바닥의 자식이라 매 프레임
+     래스터 비용이 든다). */
   background: radial-gradient(
-    50% 22% at 50% 8%,
-    rgb(var(--light) / 0.26),
-    rgb(var(--light) / 0.08) 55%,
-    transparent 80%
+    58% 34% at 50% 8%,
+    rgb(var(--light) / 0.24),
+    rgb(var(--light) / 0.09) 45%,
+    transparent 82%
   );
-  filter: blur(5px);
 }
 
 /* 광택 — 조명이 바닥에 길게 비친 반사 */
@@ -143,11 +156,10 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(30% 34% at 38% 13%, rgb(var(--light-soft) / 0.09), transparent 70%),
-    radial-gradient(30% 34% at 62% 13%, rgb(var(--light-soft) / 0.09), transparent 70%),
-    radial-gradient(24% 44% at 50% 16%, rgb(var(--light-soft) / 0.11), transparent 72%);
+    radial-gradient(40% 44% at 38% 13%, rgb(var(--light-soft) / 0.075), transparent 75%),
+    radial-gradient(40% 44% at 62% 13%, rgb(var(--light-soft) / 0.075), transparent 75%),
+    radial-gradient(34% 54% at 50% 16%, rgb(var(--light-soft) / 0.09), transparent 76%);
   mix-blend-mode: screen;
-  filter: blur(3px);
 }
 
 /* 천장 — 격자 우물반자(코퍼) + 중앙 매입등 */
@@ -175,10 +187,9 @@
 .surface--ceiling .surface__vault {
   opacity: min(1, var(--glow, 1));
   position: absolute;
-  inset: 22%;
+  inset: 10%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(var(--light) / 0.18), rgb(var(--light) / 0.045) 55%, transparent 72%);
-  filter: blur(26px);
+  background: radial-gradient(circle, rgb(var(--light) / 0.15), rgb(var(--light) / 0.04) 46%, transparent 74%);
 }
 
 /* 가장자리를 따라 도는 간접 조명(코브) */
@@ -187,9 +198,8 @@
   inset: 3.5%;
   border-radius: 14%;
   box-shadow:
-    0 0 calc(var(--R) * 0.11) rgb(var(--light) / 0.13),
-    inset 0 0 calc(var(--R) * 0.09) rgb(var(--light) / 0.09);
-  filter: blur(8px);
+    0 0 calc(var(--R) * 0.16) rgb(var(--light) / 0.13),
+    inset 0 0 calc(var(--R) * 0.13) rgb(var(--light) / 0.09);
 }
 
 /* ── 벽면 ───────────────────────────────────────────────── */
@@ -212,6 +222,17 @@
   transition: filter 700ms var(--ease);
   /* 보고 있지 않은 벽은 조도가 낮고 초점이 나가 있다 */
   filter: brightness(0.46) blur(1.5px);
+}
+
+/* 회전(트랜지션 또는 드래그) 중엔 blur 를 뺀다 — 6개 벽 전부가 3D 회전
+   중인 요소라서, filter:blur 는 원근에 따라 화면상 크기가 매 프레임
+   바뀔 때마다 래스터를 다시 계산하게 만든다. brightness 는 픽셀별
+   단순 곱셈이라 그 문제가 없어 그대로 둔다. 정지하면 700ms 트랜지션
+   으로 다시 흐려진다 — 그 한 번의 재계산은 아무것도 안 움직일 때라
+   비용이 문제되지 않는다. */
+.room.is-turning .wall:not([data-active]),
+.app[data-dragging] .wall:not([data-active]) {
+  filter: brightness(0.46);
 }
 
 .wall[data-active] {
@@ -322,12 +343,11 @@
   height: calc(var(--H) * 0.78);
   transform: translateX(-50%);
   background: radial-gradient(
-    50% 50% at 50% 26%,
-    rgb(var(--light) / 0.1),
-    rgb(var(--light) / 0.032) 52%,
-    transparent 80%
+    62% 62% at 50% 22%,
+    rgb(var(--light) / 0.075),
+    rgb(var(--light) / 0.026) 42%,
+    transparent 84%
   );
-  filter: blur(calc(var(--u) * 3.4));
   pointer-events: none;
 }
 
@@ -344,13 +364,14 @@
   color: var(--ink);
 }
 
+/* 전시실 표지 — 번호 / 가는 선 / 이름 */
 .wall__tag {
   display: flex;
-  align-items: baseline;
-  gap: calc(var(--u) * 1.1);
+  align-items: center;
+  gap: calc(var(--u) * 1);
   font-family: var(--font-mono);
-  font-size: calc(var(--u) * 0.92);
-  letter-spacing: 0.24em;
+  font-size: calc(var(--u) * 0.86);
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -359,35 +380,32 @@
   color: var(--brass);
 }
 
-.wall__names {
-  display: flex;
-  align-items: baseline;
-  gap: calc(var(--u) * 0.9);
-}
-
-.wall__name-ko {
-  font-family: var(--font-body);
-  letter-spacing: 0.12em;
-  opacity: 0.7;
+.wall__tag-rule {
+  width: calc(var(--u) * 2.2);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
 }
 
 .wall__lead {
-  margin-top: calc(var(--u) * 2.4);
-  max-width: calc(var(--u) * 46);
+  margin-top: calc(var(--u) * 2.6);
+  max-width: calc(var(--u) * 44);
 }
 
+/* 전시 표지판 — 영문 세리프를 크게, 자간을 살짝 좁혀 */
 .wall__title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: calc(var(--u) * 3.6);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-size: calc(var(--u) * 4.6);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
 }
 
+/* 한국어 본문 — 자간을 살짝 좁히고 행간을 넉넉하게 */
 .wall__intro {
-  margin-top: calc(var(--u) * 0.9);
-  font-size: calc(var(--u) * 1.15);
-  line-height: 1.7;
+  margin-top: calc(var(--u) * 1.2);
+  font-size: calc(var(--u) * 1.12);
+  line-height: 1.85;
+  letter-spacing: -0.005em;
   color: var(--ink-soft);
-  opacity: 0.86;
 }

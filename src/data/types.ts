@@ -67,9 +67,11 @@ type WallBase = {
   id: string
   /** 벽 번호 — '00', '01' ... */
   no: string
+  /** 표지판/네비게이션에 쓰는 짧은 이름. 영문 대문자 권장 (예: 'WORKS') */
   name: string
-  nameKo: string
+  /** 벽에 크게 걸리는 제목. 영문으로 두면 전시 표지판처럼 읽힌다 */
   title: string
+  /** 제목 아래 한국어 본문 한두 문장 */
   intro: string
 }
 
