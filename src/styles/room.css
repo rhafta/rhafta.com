@@ -34,16 +34,15 @@
   cursor: grabbing;
 }
 
-/* 비네트 + 따뜻한 색 보정 — 3D 컨텍스트 바깥에서 화면 전체에 얹는다 */
+/* 비네트 — 화면 가장자리만 아주 옅게 눌러준다. 진하게 깔면 사진이
+   바랜 것처럼 보이므로 존재를 눈치채지 못할 정도로만. */
 .stage::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 5;
   pointer-events: none;
-  background:
-    radial-gradient(135% 110% at 50% 42%, transparent 52%, rgba(8, 5, 3, 0.55) 100%),
-    radial-gradient(70% 60% at 50% 30%, rgba(255, 190, 120, 0.05), transparent 70%);
+  background: radial-gradient(140% 115% at 50% 44%, transparent 62%, rgba(0, 0, 0, 0.34) 100%);
 }
 
 .room {
@@ -53,7 +52,9 @@
   width: 0;
   height: 0;
   transform-style: preserve-3d;
-  transform: translateZ(var(--A)) rotateY(calc(var(--heading, 0deg) * -1));
+  /* heading 이 커지면 방이 왼쪽으로 돌아간다 = 다음 벽이 오른쪽에서
+     들어온다. 전시가 왼쪽에서 오른쪽으로 이어지는 배치. */
+  transform: translateZ(var(--A)) rotateY(var(--heading, 0deg));
 }
 
 /* 회전 중에만 전환을 건다. 상시로 걸어두면 Chrome 이 .room 을 합성 레이어로
@@ -107,9 +108,9 @@
     /* 널판마다 미묘하게 다른 톤 */
     repeating-linear-gradient(
       90deg,
-      rgba(255, 214, 160, 0.025) 0 88px,
+      rgb(var(--light) / 0.022) 0 88px,
       rgba(0, 0, 0, 0.05) 88px 176px,
-      rgba(255, 200, 150, 0.014) 176px 264px,
+      rgb(var(--light) / 0.012) 176px 264px,
       rgba(0, 0, 0, 0.028) 264px 352px
     ),
     /* 나뭇결 */
@@ -130,8 +131,8 @@
   opacity: min(1, var(--glow, 1));
   background: radial-gradient(
     50% 22% at 50% 8%,
-    rgba(255, 202, 136, 0.3),
-    rgba(255, 184, 110, 0.09) 55%,
+    rgb(var(--light) / 0.26),
+    rgb(var(--light) / 0.08) 55%,
     transparent 80%
   );
   filter: blur(5px);
@@ -142,9 +143,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(30% 34% at 38% 13%, rgba(255, 226, 178, 0.1), transparent 70%),
-    radial-gradient(30% 34% at 62% 13%, rgba(255, 226, 178, 0.1), transparent 70%),
-    radial-gradient(24% 44% at 50% 16%, rgba(255, 238, 200, 0.12), transparent 72%);
+    radial-gradient(30% 34% at 38% 13%, rgb(var(--light-soft) / 0.09), transparent 70%),
+    radial-gradient(30% 34% at 62% 13%, rgb(var(--light-soft) / 0.09), transparent 70%),
+    radial-gradient(24% 44% at 50% 16%, rgb(var(--light-soft) / 0.11), transparent 72%);
   mix-blend-mode: screen;
   filter: blur(3px);
 }
@@ -157,13 +158,13 @@
     repeating-linear-gradient(
       90deg,
       rgba(0, 0, 0, 0.5) 0 3px,
-      rgba(255, 244, 224, 0.045) 3px 5px,
+      rgb(var(--light-soft) / 0.04) 3px 5px,
       transparent 5px 148px
     ),
     repeating-linear-gradient(
       0deg,
       rgba(0, 0, 0, 0.5) 0 3px,
-      rgba(255, 244, 224, 0.045) 3px 5px,
+      rgb(var(--light-soft) / 0.04) 3px 5px,
       transparent 5px 148px
     ),
     radial-gradient(78% 78% at 50% 50%, var(--ceiling-a), var(--ceiling-b) 92%);
@@ -176,7 +177,7 @@
   position: absolute;
   inset: 22%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 214, 156, 0.2), rgba(255, 196, 128, 0.05) 55%, transparent 72%);
+  background: radial-gradient(circle, rgb(var(--light) / 0.18), rgb(var(--light) / 0.045) 55%, transparent 72%);
   filter: blur(26px);
 }
 
@@ -186,8 +187,8 @@
   inset: 3.5%;
   border-radius: 14%;
   box-shadow:
-    0 0 calc(var(--R) * 0.11) rgba(255, 190, 118, 0.14),
-    inset 0 0 calc(var(--R) * 0.09) rgba(255, 190, 118, 0.1);
+    0 0 calc(var(--R) * 0.11) rgb(var(--light) / 0.13),
+    inset 0 0 calc(var(--R) * 0.09) rgb(var(--light) / 0.09);
   filter: blur(8px);
 }
 
@@ -198,18 +199,19 @@
   top: calc(var(--H) / -2);
   width: var(--S);
   height: var(--H);
-  transform: rotateY(calc(var(--i) * var(--sector))) translateZ(calc(var(--A) * -1));
+  /* 벽을 시계 반대 방향으로 배치 = 01 이 00 의 오른쪽에 온다.
+     전시가 왼쪽에서 오른쪽으로 이어지는 배치. */
+  transform: rotateY(calc(var(--i) * var(--sector) * -1)) translateZ(calc(var(--A) * -1));
   backface-visibility: hidden;
   background:
-    /* 회벽의 미세한 얼룩 */
-    radial-gradient(140% 90% at 20% 0%, rgba(255, 240, 214, 0.05), transparent 52%),
-    radial-gradient(120% 80% at 84% 8%, rgba(255, 236, 206, 0.04), transparent 48%),
-    linear-gradient(180deg, var(--plaster-hi) 0%, var(--plaster) 40%, var(--plaster-lo) 100%);
+    /* 회벽의 미세한 얼룩 — 재질이 아니라 빛의 색으로 */
+    radial-gradient(140% 90% at 20% 0%, rgb(var(--light) / 0.035), transparent 52%),
+    linear-gradient(180deg, var(--plaster-hi) 0%, var(--plaster) 42%, var(--plaster-lo) 100%);
   overflow: hidden;
   pointer-events: none;
   transition: filter 700ms var(--ease);
-  /* 보고 있지 않은 벽은 조도가 낮다 */
-  filter: brightness(0.52) saturate(0.82) blur(1px);
+  /* 보고 있지 않은 벽은 조도가 낮고 초점이 나가 있다 */
+  filter: brightness(0.46) blur(1.5px);
 }
 
 .wall[data-active] {
@@ -227,13 +229,13 @@
   background:
     linear-gradient(
       90deg,
-      rgba(4, 3, 2, 0.5),
-      transparent 12%,
-      transparent 88%,
-      rgba(4, 3, 2, 0.5)
+      rgba(0, 0, 0, 0.36),
+      transparent 14%,
+      transparent 86%,
+      rgba(0, 0, 0, 0.36)
     ),
-    linear-gradient(180deg, rgba(4, 3, 2, 0.42), transparent 11%),
-    linear-gradient(0deg, rgba(4, 3, 2, 0.3), transparent 9%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 12%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.22), transparent 10%);
 }
 
 /* 벽 아래 걸레받이 */
@@ -243,16 +245,14 @@
   right: 0;
   bottom: 0;
   z-index: 4;
-  height: calc(var(--u) * 2.6);
+  height: calc(var(--u) * 2.2);
+  /* 얇은 그림자선 하나로 바닥과의 경계만 만든다 — 예전식 엠보싱 금지 */
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--plaster-lo) 76%, #fff) 0 8%,
-    var(--plaster-lo) 12%,
-    color-mix(in srgb, var(--plaster-lo) 55%, #000) 100%
+    color-mix(in srgb, var(--plaster-lo) 88%, #000),
+    color-mix(in srgb, var(--plaster-lo) 55%, #000)
   );
-  box-shadow:
-    0 calc(var(--u) * -1.6) calc(var(--u) * 2.4) rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  box-shadow: 0 calc(var(--u) * -1.6) calc(var(--u) * 2.4) rgba(0, 0, 0, 0.26);
 }
 
 /* 천장에서 내려오는 넓은 워시 */
@@ -261,9 +261,9 @@
   inset: 0;
   opacity: min(1, var(--glow, 1));
   background: radial-gradient(
-    130% 70% at 50% -8%,
-    rgba(255, 214, 158, 0.11),
-    transparent 60%
+    130% 72% at 50% -10%,
+    rgb(var(--light) / 0.1),
+    transparent 62%
   );
   pointer-events: none;
 }
@@ -274,10 +274,9 @@
   top: calc(var(--u) * 1.7);
   left: 6%;
   right: 6%;
-  height: calc(var(--u) * 0.42);
+  height: calc(var(--u) * 0.34);
   border-radius: 99px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.6));
-  box-shadow: 0 calc(var(--u) * 0.14) calc(var(--u) * 0.32) rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   justify-content: space-around;
   pointer-events: none;
@@ -285,12 +284,11 @@
 
 .wall__lamp {
   position: relative;
-  width: calc(var(--u) * 1.35);
-  height: calc(var(--u) * 1.55);
-  margin-top: calc(var(--u) * 0.24);
-  border-radius: 38% 38% 52% 52%;
-  background: linear-gradient(180deg, #55483a, #1e1913 70%);
-  box-shadow: 0 calc(var(--u) * 0.22) calc(var(--u) * 0.5) rgba(0, 0, 0, 0.55);
+  width: calc(var(--u) * 1.15);
+  height: calc(var(--u) * 1.35);
+  margin-top: calc(var(--u) * 0.22);
+  border-radius: 36% 36% 50% 50%;
+  background: #161514;
 }
 
 /* 전구 — 몸통 아래에서 빛나는 점 */
@@ -303,30 +301,33 @@
   height: calc(var(--u) * 0.34);
   transform: translateX(-50%);
   border-radius: 50%;
-  background: #ffe1ac;
+  background: rgb(var(--light-soft));
   box-shadow:
-    0 0 calc(var(--u) * 0.9) rgba(255, 214, 150, 0.95),
-    0 0 calc(var(--u) * 2.6) rgba(255, 196, 120, 0.5);
+    0 0 calc(var(--u) * 0.8) rgb(var(--light) / 0.9),
+    0 0 calc(var(--u) * 2.4) rgb(var(--light) / 0.4);
 }
 
-/* 빛기둥 — 부드럽고 따뜻하게 */
+/* 벽에 떨어지는 빛 — 삼각형 빛기둥(무대 조명 그래픽처럼 보인다) 대신
+   가장자리가 없는 타원형 광원으로. 실제 스포트라이트가 벽에 만드는 건
+   기둥이 아니라 번진 웅덩이다. */
 .wall__lamp::after {
   content: '';
   opacity: min(1, var(--glow, 1));
   position: absolute;
-  top: 96%;
+  top: 104%;
   left: 50%;
-  width: calc(var(--u) * 42);
-  height: calc(var(--H) * 0.72);
+  /* 서로 넉넉히 겹치도록 넓게 — 등 개수가 몇 개든 하나의 매끄러운
+     워시로 합쳐져야지, 얼룩 여러 개로 보이면 안 된다. */
+  width: calc(var(--u) * 60);
+  height: calc(var(--H) * 0.78);
   transform: translateX(-50%);
-  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 219, 165, 0.2),
-    rgba(255, 208, 148, 0.07) 48%,
-    rgba(255, 200, 136, 0) 76%
+  background: radial-gradient(
+    50% 50% at 50% 26%,
+    rgb(var(--light) / 0.1),
+    rgb(var(--light) / 0.032) 52%,
+    transparent 80%
   );
-  filter: blur(calc(var(--u) * 2.2));
+  filter: blur(calc(var(--u) * 3.4));
   pointer-events: none;
 }
 
@@ -381,7 +382,6 @@
   font-size: calc(var(--u) * 3.6);
   line-height: 1.1;
   letter-spacing: -0.01em;
-  text-shadow: 0 calc(var(--u) * 0.25) calc(var(--u) * 0.9) rgba(0, 0, 0, 0.5);
 }
 
 .wall__intro {
