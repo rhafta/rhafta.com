@@ -25,8 +25,8 @@ import type { SiteSettings, Wall } from './types'
 /** ─── 전역 설정 — 입맛대로 바꿔보세요 ───────────────────── */
 export const settings: SiteSettings = {
   mood: 'warm',
-  accent: '#c99a4e',
-  accentBright: '#eec987',
+  accent: '#d9a441',
+  accentBright: '#f2c66d',
   lightIntensity: 1,
   lampsPerWall: 3,
   turnMs: 820,

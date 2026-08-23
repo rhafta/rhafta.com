@@ -51,9 +51,10 @@ export function usePointerRotation(engine: RotationEngine, { locked, onDragChang
       velocity = (e.clientX - lastX) / dt
       lastX = e.clientX
       lastT = e.timeStamp
-      // 손으로 벽을 잡아 미는 방향과 같은 방향으로 돈다: 오른쪽으로 끌면
-      // 다음 벽(오른쪽 화살표/키와 같은 방향)이 들어온다.
-      paint(startHeading + dx * perPx())
+      // 잡은 벽이 손을 따라온다: 오른쪽으로 끌면 벽도 오른쪽으로 밀리므로
+      // 왼쪽에 있던 이전 벽이 들어온다. (전시는 왼→오 배치이므로
+      // 다음 벽으로 가려면 왼쪽으로 미는 것이 맞다 — 캐러셀과 동일)
+      paint(startHeading - dx * perPx())
     }
 
     const up = (e: PointerEvent) => {
@@ -68,7 +69,7 @@ export function usePointerRotation(engine: RotationEngine, { locked, onDragChang
       if (flick || (target === base && Math.abs(delta) > step * 0.18)) {
         // move() 와 같은 부호여야 한다 — 빠르게 훑을 때도 느리게 끌 때와
         // 같은 방향으로 넘어가야 하므로.
-        const dir = flick ? Math.sign(velocity) : Math.sign(delta)
+        const dir = flick ? -Math.sign(velocity) : Math.sign(delta)
         target = base + dir * step
       }
       settle(target)

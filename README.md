@@ -132,9 +132,9 @@ Instrument Serif / Inter / JetBrains Mono 는 `@fontsource/*` 로 자체
 
 ```ts
 export const settings: SiteSettings = {
-  mood: 'warm',            // 'warm' | 'neutral' | 'cool' — 벽·바닥 색감
-  accent: '#c99a4e',       // 강조색 (명패, 포인트)
-  accentBright: '#eec987', // 강조색 밝은 버전
+  mood: 'warm',            // 'warm' | 'neutral' | 'cool' — 표면색 + 조명색
+  accent: '#d9a441',       // 강조색 (명패, 포인트)
+  accentBright: '#f2c66d', // 강조색 밝은 버전
   lightIntensity: 1,       // 조명 밝기 0.4 ~ 1.2
   lampsPerWall: 3,         // 벽마다 레일 조명 개수
   turnMs: 820,             // 벽 회전 시간(ms)

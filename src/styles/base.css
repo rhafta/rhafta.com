@@ -31,49 +31,64 @@
   --scrim: rgba(30, 26, 21, 0.62);
 }
 
-/* 야간 개장 — 따뜻한 조명만 남은 전시관 (현재 상시 적용) */
+/* 야간 개장 — 따뜻한 조명만 남은 전시관 (현재 상시 적용)
+   원칙: 표면(벽·바닥·천장)은 거의 중성 회색으로 두고, 따뜻함은 전부
+   "빛"(--light-*)이 만든다. 재질 자체를 갈색으로 칠하면 화면 전체가
+   누렇게 바랜 사진처럼 보인다. */
 .app[data-mode='night'] {
-  --plaster: #292219;
-  --plaster-hi: #3b3226;
-  --plaster-lo: #17110c;
-  --floor-a: #382a1d;
-  --floor-b: #0d0906;
-  --ceiling-a: #1d1610;
-  --ceiling-b: #0a0705;
-  --ink: #f6eddc;
-  --ink-soft: #d9ccb5;
-  --muted: #97896e;
-  --hairline: rgba(246, 237, 220, 0.15);
-  --brass: #c99a4e;
-  --brass-hi: #eec987;
-  --frame-a: #191209;
-  --frame-b: #4a3a27;
-  --plate-bg: rgba(36, 29, 21, 0.82);
+  --plaster: #1e1c1a;
+  --plaster-hi: #2a2724;
+  --plaster-lo: #141312;
+  --floor-a: #2b2725;
+  --floor-b: #0c0b0a;
+  --ceiling-a: #171615;
+  --ceiling-b: #0a0a09;
+  --ink: #f7f6f3;
+  --ink-soft: #c8c4bd;
+  --muted: #8d877f;
+  --hairline: rgba(247, 246, 243, 0.13);
+  --brass: #d9a441;
+  --brass-hi: #f2c66d;
+  --frame-a: #0d0c0b;
+  --frame-b: #272421;
+  --plate-bg: rgba(18, 17, 16, 0.66);
+  /* 그림을 두르는 매트지 — 거의 흰색이어야 작품이 살아난다 */
+  --mat: #f2f0ec;
   --beam: 0.9;
-  --sky: #0b0806;
-  --scrim: rgba(6, 4, 3, 0.8);
+  --sky: #080807;
+  --scrim: rgba(5, 5, 4, 0.82);
 }
 
-/* ── 분위기 프리셋 (gallery.ts settings.mood) ──
-   야간 팔레트 위에 벽·바닥 색만 갈아끼운다 */
+/* 조명색 — 표면이 아니라 빛에만 쓰는 따뜻한 톤 */
+.app {
+  --light: 255 205 145;
+  --light-soft: 255 220 175;
+}
+
+/* ── 분위기 프리셋 (content.ts 의 settings.mood) ──
+   야간 팔레트 위에 표면색과 조명색만 갈아끼운다 */
 .app[data-mood='neutral'][data-mode='night'] {
-  --plaster: #232220;
-  --plaster-hi: #34322e;
-  --plaster-lo: #131211;
-  --floor-a: #2c2823;
-  --floor-b: #0b0a09;
-  --ceiling-a: #191714;
-  --ceiling-b: #090807;
+  --plaster: #1d1d1c;
+  --plaster-hi: #292928;
+  --plaster-lo: #131313;
+  --floor-a: #292827;
+  --floor-b: #0b0b0b;
+  --ceiling-a: #161616;
+  --ceiling-b: #090909;
+  --light: 236 236 234;
+  --light-soft: 244 244 242;
 }
 
 .app[data-mood='cool'][data-mode='night'] {
-  --plaster: #1f2226;
-  --plaster-hi: #2e3238;
-  --plaster-lo: #101214;
-  --floor-a: #262a2f;
-  --floor-b: #090a0c;
-  --ceiling-a: #15181c;
-  --ceiling-b: #070809;
+  --plaster: #1b1e21;
+  --plaster-hi: #262b2f;
+  --plaster-lo: #121415;
+  --floor-a: #252a2e;
+  --floor-b: #0a0b0c;
+  --ceiling-a: #14171a;
+  --ceiling-b: #08090a;
+  --light: 186 214 245;
+  --light-soft: 208 228 250;
 }
 
 @property --heading {
@@ -162,8 +177,9 @@ img {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
 }
 
+/* 야간엔 아주 옅게만 — 입자가 보이기 시작하면 화면이 탁해진다 */
 .app[data-mode='night'] .app__grain {
-  opacity: 0.22;
+  opacity: 0.09;
 }
 
 @media (prefers-reduced-motion: reduce) {
