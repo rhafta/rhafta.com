@@ -66,11 +66,36 @@ src/
 
 ## 폰트
 
-Instrument Serif / Inter / JetBrains Mono 는 `@fontsource/*` 로 자체
-호스팅한다 (`src/main.tsx` 상단). Google Fonts 같은 외부 요청이 없어서
-첫 로딩이 더 빠르다. 굵기를 추가하려면 실제 쓰는 `font-weight` 값을
-확인하고 해당 `@fontsource/.../{weight}.css` 를 import 하면 된다 —
-안 쓰는 굵기를 받아오지 않는 것이 핵심이다.
+전부 자체 호스팅한다 (`src/main.tsx` 상단). 외부 요청이 없다.
+
+| 용도 | 글꼴 |
+|---|---|
+| 표제(영문) | Instrument Serif |
+| 본문(영문) | Inter |
+| 라벨·숫자 | JetBrains Mono |
+| **한글 전체** | **Pretendard (가변폰트)** |
+
+한글 웹폰트를 싣지 않으면 방문자 OS 기본 글꼴로 떨어진다 — 윈도우에서는
+맑은 고딕이라 문서·발표자료 같은 인상이 된다. Pretendard 는 가변폰트라
+파일 세트 하나로 모든 굵기를 덮고, `unicode-range` 로 92 조각으로
+나뉘어 있어 **실제 문안에 쓰인 글자가 속한 조각만** 내려받는다.
+
+굵기를 추가할 때는 실제 쓰는 `font-weight` 를 확인하고 해당
+`@fontsource/.../latin-{weight}.css` 만 import 한다. 안 쓰는 굵기와
+서브셋(키릴·그리스·라틴 확장)을 받아오지 않는 것이 핵심이다.
+
+## 글의 언어 규칙
+
+한국어와 영어를 섞되, **역할로 나눈다.**
+
+- **영어** — 표지판 역할: 벽 번호·이름(`01 / WORKS`), 큰 제목
+  (`Selected Works`), 소제목(`Now`, `Tools`), UI 문구(`Close`, 안내 문구)
+- **한국어** — 말 역할: 제목 밑 소개 문장, 작품 설명, 방명록 문안,
+  작품 제목
+
+이렇게 두면 시선이 닿는 "포인트"는 전시 표지판처럼 읽히고, 실제 내용은
+모국어로 편하게 읽힌다. 새 벽을 추가할 때도 `name` / `title` 은 영어,
+`intro` 는 한국어로 두면 통일감이 유지된다.
 
 ---
 
@@ -93,6 +118,9 @@ Instrument Serif / Inter / JetBrains Mono 는 `@fontsource/*` 로 자체
 | `gallery` | 액자를 거는 전시 벽 | `layout`, `items` |
 | `text` | 벽에 붙는 안내판(소개 등) | `sections` |
 | `contact` | 방명록 / 연락처 | `note`, `links` |
+
+공통 필드: `no`(번호), `name`(표지판·네비게이션용 짧은 영문 이름),
+`title`(벽에 크게 걸리는 영문 제목), `intro`(제목 아래 한국어 문장).
 
 `gallery` 벽의 `layout`:
 

@@ -30,8 +30,8 @@ export const settings: SiteSettings = {
   lightIntensity: 1,
   lampsPerWall: 3,
   turnMs: 820,
-  hintDesktop: '드래그하거나 ← → 키로 전시실을 둘러보세요',
-  hintMobile: '옆으로 밀어 다음 벽을 보세요',
+  hintDesktop: 'Drag, or use \u2190 \u2192 to look around',
+  hintMobile: 'Swipe to the next wall',
 }
 
 /** 관장(=나) 정보 */
@@ -49,16 +49,15 @@ export const walls: Wall[] = [
     id: 'hall',
     no: '00',
     name: 'HALL',
-    nameKo: '홀',
     title: 'rhafta',
-    tagline: '만드는 사람의 개인 전시관',
+    tagline: 'A private gallery of things I make',
     intro:
       '이곳은 제가 만든 것들과 지나온 장면들을 걸어두는 방입니다. 좌우로 돌려 다음 벽으로 이동하세요.',
     links: [
-      { label: 'GitHub', href: 'https://github.com/rhafta', hint: '코드' },
-      { label: 'X', href: 'https://x.com/rhafta', hint: '짧은 생각' },
-      { label: 'Instagram', href: 'https://instagram.com/rhafta', hint: '사진' },
-      { label: 'Email', href: 'mailto:hello@rhafta.com', hint: '연락' },
+      { label: 'GitHub', href: 'https://github.com/rhafta', hint: 'Code' },
+      { label: 'X', href: 'https://x.com/rhafta', hint: 'Thoughts' },
+      { label: 'Instagram', href: 'https://instagram.com/rhafta', hint: 'Photos' },
+      { label: 'Email', href: 'mailto:hello@rhafta.com', hint: 'Say hello' },
     ],
   },
 
@@ -68,8 +67,7 @@ export const walls: Wall[] = [
     id: 'works',
     no: '01',
     name: 'WORKS',
-    nameKo: '작업',
-    title: '만든 것들',
+    title: 'Selected Works',
     intro: '직접 설계하고 끝까지 만들어 본 것들. 액자를 누르면 자세히 볼 수 있습니다.',
     layout: 'row',
     items: [
@@ -128,8 +126,7 @@ export const walls: Wall[] = [
     id: 'journeys',
     no: '02',
     name: 'JOURNEYS',
-    nameKo: '여행',
-    title: '다녀온 곳',
+    title: 'Places & Days',
     intro: '걸어 다니며 주워 담은 장면들. 날짜와 장소를 명패에 새겨 두었습니다.',
     layout: 'salon',
     items: [
@@ -187,8 +184,7 @@ export const walls: Wall[] = [
     id: 'photographs',
     no: '03',
     name: 'PHOTOGRAPHS',
-    nameKo: '사진',
-    title: '사진첩',
+    title: 'Light and Grain',
     intro: '주제도 순서도 없이, 그냥 좋아서 남겨둔 것들.',
     layout: 'grid',
     items: [
@@ -207,12 +203,11 @@ export const walls: Wall[] = [
     id: 'about',
     no: '04',
     name: 'ABOUT',
-    nameKo: '소개',
-    title: '관장의 말',
+    title: "Curator's Note",
     intro: '이 전시관을 지은 사람에 대하여.',
     sections: [
       {
-        heading: '지금',
+        heading: 'Now',
         lines: [
           '웹을 만들고, 만든 과정을 기록합니다.',
           '작은 도구를 만들어 스스로의 하루를 고치는 일을 좋아합니다.',
@@ -220,7 +215,7 @@ export const walls: Wall[] = [
         ],
       },
       {
-        heading: '도구',
+        heading: 'Tools',
         lines: [
           'TypeScript · React · Next.js',
           'Node.js · Postgres · Supabase',
@@ -228,7 +223,7 @@ export const walls: Wall[] = [
         ],
       },
       {
-        heading: '연혁',
+        heading: 'Timeline',
         lines: [
           '2026 — 개인 전시관 rhafta.com 개관',
           '2025 — 사이드 프로젝트 두 개 공개',
@@ -244,14 +239,13 @@ export const walls: Wall[] = [
     id: 'contact',
     no: '05',
     name: 'CONTACT',
-    nameKo: '연락',
-    title: '방명록',
+    title: 'Leave a Note',
     intro: '전시를 끝까지 봐주셔서 고맙습니다.',
     note: '함께 만들고 싶은 것이 있거나, 그냥 인사를 남기고 싶다면 언제든지.',
     links: [
-      { label: 'hello@rhafta.com', href: 'mailto:hello@rhafta.com', hint: '메일' },
-      { label: 'github.com/rhafta', href: 'https://github.com/rhafta', hint: '깃허브' },
-      { label: 'x.com/rhafta', href: 'https://x.com/rhafta', hint: '엑스' },
+      { label: 'hello@rhafta.com', href: 'mailto:hello@rhafta.com', hint: 'Email' },
+      { label: 'github.com/rhafta', href: 'https://github.com/rhafta', hint: 'GitHub' },
+      { label: 'x.com/rhafta', href: 'https://x.com/rhafta', hint: 'X' },
     ],
   },
 ]

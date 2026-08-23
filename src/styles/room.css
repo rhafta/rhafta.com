@@ -344,13 +344,14 @@
   color: var(--ink);
 }
 
+/* 전시실 표지 — 번호 / 가는 선 / 이름 */
 .wall__tag {
   display: flex;
-  align-items: baseline;
-  gap: calc(var(--u) * 1.1);
+  align-items: center;
+  gap: calc(var(--u) * 1);
   font-family: var(--font-mono);
-  font-size: calc(var(--u) * 0.92);
-  letter-spacing: 0.24em;
+  font-size: calc(var(--u) * 0.86);
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -359,35 +360,32 @@
   color: var(--brass);
 }
 
-.wall__names {
-  display: flex;
-  align-items: baseline;
-  gap: calc(var(--u) * 0.9);
-}
-
-.wall__name-ko {
-  font-family: var(--font-body);
-  letter-spacing: 0.12em;
-  opacity: 0.7;
+.wall__tag-rule {
+  width: calc(var(--u) * 2.2);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
 }
 
 .wall__lead {
-  margin-top: calc(var(--u) * 2.4);
-  max-width: calc(var(--u) * 46);
+  margin-top: calc(var(--u) * 2.6);
+  max-width: calc(var(--u) * 44);
 }
 
+/* 전시 표지판 — 영문 세리프를 크게, 자간을 살짝 좁혀 */
 .wall__title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: calc(var(--u) * 3.6);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-size: calc(var(--u) * 4.6);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
 }
 
+/* 한국어 본문 — 자간을 살짝 좁히고 행간을 넉넉하게 */
 .wall__intro {
-  margin-top: calc(var(--u) * 0.9);
-  font-size: calc(var(--u) * 1.15);
-  line-height: 1.7;
+  margin-top: calc(var(--u) * 1.2);
+  font-size: calc(var(--u) * 1.12);
+  line-height: 1.85;
+  letter-spacing: -0.005em;
   color: var(--ink-soft);
-  opacity: 0.86;
 }

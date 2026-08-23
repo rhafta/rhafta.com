@@ -42,7 +42,7 @@ export function Detail({ item, onClose }: Props) {
         </div>
         <div className="detail__body">
           <button ref={closeRef} type="button" className="detail__close" onClick={onClose}>
-            닫기 <span aria-hidden="true">✕</span>
+            Close <span aria-hidden="true">✕</span>
           </button>
           <h2 className="detail__title">{item.title}</h2>
           <p className="detail__meta">{formatMeta(item.medium, item.year)}</p>
