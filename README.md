@@ -20,6 +20,18 @@ npm run typecheck   # 타입만 검사
 
 빌드 결과는 순수 정적 파일이라 Vercel, Netlify, GitHub Pages 어디에나 올릴 수 있다.
 
+## 배포 (Vercel)
+
+`vercel.json` 이 이미 준비되어 있다 — GitHub 저장소를 Vercel 프로젝트로
+연결하기만 하면 프레임워크(Vite)를 자동 인식해서 그대로 배포된다.
+
+- `buildCommand: "npm run build"` — 타입체크(`tsc -b`)를 통과해야 배포되도록
+  빌드 스크립트를 명시했다. 타입 에러가 있는 채로는 배포가 올라가지 않는다.
+- 정적 자산(`/assets/*`, 파일명에 콘텐츠 해시가 붙어 매번 바뀐다)에
+  1년 `immutable` 캐시 헤더를 걸어 재방문 시 네트워크를 거의 타지 않게 했다.
+  진입점 `index.html` 은 이 규칙에 안 걸리므로 항상 최신 배포를 가리킨다.
+- 라우팅은 해시(`#works` 등)만 쓰므로 SPA 리라이트 설정이 필요 없다.
+
 ## 코드 구조
 
 ```
