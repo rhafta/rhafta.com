@@ -10,12 +10,15 @@
 
 ## 개발
 
+패키지 매니저는 **pnpm** 을 쓴다 (`package.json` 의 `packageManager` 필드로
+버전까지 고정돼 있다 — Corepack 이 자동으로 맞춰 씀).
+
 ```bash
-npm install
-npm run dev        # 개발 서버
-npm run build      # dist/ 에 정적 빌드 (타입체크 포함)
-npm run lint        # ESLint
-npm run typecheck   # 타입만 검사
+pnpm install
+pnpm dev         # 개발 서버
+pnpm build       # dist/ 에 정적 빌드 (타입체크 포함)
+pnpm lint         # ESLint
+pnpm typecheck    # 타입만 검사
 ```
 
 빌드 결과는 순수 정적 파일이라 Vercel, Netlify, GitHub Pages 어디에나 올릴 수 있다.
@@ -23,9 +26,9 @@ npm run typecheck   # 타입만 검사
 ## 배포 (Vercel)
 
 `vercel.json` 이 이미 준비되어 있다 — GitHub 저장소를 Vercel 프로젝트로
-연결하기만 하면 프레임워크(Vite)를 자동 인식해서 그대로 배포된다.
+연결하면 `pnpm-lock.yaml` 을 보고 pnpm 으로 설치·빌드한다.
 
-- `buildCommand: "npm run build"` — 타입체크(`tsc -b`)를 통과해야 배포되도록
+- `buildCommand: "pnpm build"` — 타입체크(`tsc -b`)를 통과해야 배포되도록
   빌드 스크립트를 명시했다. 타입 에러가 있는 채로는 배포가 올라가지 않는다.
 - 정적 자산(`/assets/*`, 파일명에 콘텐츠 해시가 붙어 매번 바뀐다)에
   1년 `immutable` 캐시 헤더를 걸어 재방문 시 네트워크를 거의 타지 않게 했다.
