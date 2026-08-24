@@ -11,8 +11,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  * 포인터/휠/키보드 등 실제 입력 처리는 각각 별도 훅(usePointerRotation 등)이
  * 맡고, 이 훅이 반환하는 엔진을 통해 heading 을 움직인다.
  */
-export function useRotationState(count: number) {
+export function useRotationState(count: number, turnMs: number) {
   const step = 360 / count
+  /* is-turning 을 뗄 때까지 기다리는 시간. CSS 쪽 회전 트랜지션(--turn)보다
+     항상 넉넉히 길어야 한다 — 짧으면 트랜지션이 끝나기 전에 클래스가
+     빠지면서 회전이 목표 각도 전에 얼어붙는다. */
+  const settleMs = turnMs + 80
   const roomRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef(0)
   const [index, setIndex] = useState(0)
@@ -42,9 +46,9 @@ export function useRotationState(count: number) {
         // 각도가 무한히 커지지 않도록 정규화
         const norm = i * step
         if (Math.abs(headingRef.current - norm) > 0.01) paint(norm)
-      }, 900)
+      }, settleMs)
     },
-    [count, paint, step],
+    [count, paint, settleMs, step],
   )
 
   const turn = useCallback(
