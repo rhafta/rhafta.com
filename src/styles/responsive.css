@@ -102,29 +102,30 @@
   line-height: 1.85;
 }
 
-.app[data-compact] .desk {
-  height: calc(var(--u) * 30);
+/* 벽걸이 선반 — 좁은 화면에서는 방이 세로로 길어져(벽 높이 170u 안팎)
+   데스크톱 치수 그대로면 장난감처럼 작아진다. 벽 대비 비율을 맞춘다. */
+.app[data-compact] .console {
+  --desk-w: calc(var(--u) * 76);
+  --desk-d: calc(var(--u) * 22);
+  --desk-h: calc(var(--u) * 50);
+  --apron-h: calc(var(--u) * 5);
 }
 
-.app[data-compact] .desk__scene {
-  width: calc(var(--u) * 60);
-  height: calc(var(--u) * 24);
+.app[data-compact] .console__items {
+  gap: calc(var(--u) * 6);
 }
 
-.app[data-compact] .desk__items {
-  gap: calc(var(--u) * 3.4);
+.app[data-compact] .placard__hit {
+  width: calc(var(--u) * 11);
+  height: calc(var(--u) * 11);
+  padding: calc(var(--u) * 0.8);
 }
 
-.app[data-compact] .desk__hit {
-  width: calc(var(--u) * 6.2);
-  height: calc(var(--u) * 6.2);
-}
-
-.app[data-compact] .desk__icon svg,
-.app[data-compact] .desk__icon .brand-letter {
-  width: calc(var(--u) * 3.2);
-  height: calc(var(--u) * 3.2);
-  font-size: calc(var(--u) * 3.2);
+.app[data-compact] .placard__plate svg,
+.app[data-compact] .placard__plate .brand-letter {
+  width: calc(var(--u) * 4.6);
+  height: calc(var(--u) * 4.6);
+  font-size: calc(var(--u) * 4.6);
 }
 
 /* 소개 패널 */

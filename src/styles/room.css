@@ -436,3 +436,228 @@
   letter-spacing: -0.005em;
   color: var(--ink-soft);
 }
+
+/* ── 홀 벽에 달린 선반 ───────────────────────────────────────
+   벽에 그린 그림이 아니라 방 안에 실제로 붙어 있는 물건이다. 그래서
+   벽(평면)의 자식이 아니라 .room 의 형제로 두고, 상판과 앞면을 각각
+   제자리에 세워 만든다.
+
+   좌표계: 이 상자는 벽과 같은 크기(S × H)·같은 각도로 놓이되 --desk-z
+   만큼 방 안쪽으로 나와 있다. 상자 안에서 y=0 이 천장, y=H 가 바닥이므로
+   "바닥에서 h 만큼 높은 곳" 은 top: calc(H - h) 이다.
+   ────────────────────────────────────────────────────────── */
+.console {
+  --desk-w: calc(var(--u) * 42);
+  --desk-d: calc(var(--u) * 13);
+  /* 바닥에서 선반까지 — 다리가 없으니 테이블보다 조금 높이 단다 */
+  --desk-h: calc(var(--u) * 21);
+  --desk-z: calc(var(--u) * 0.8);
+  /* 벽걸이 선반은 슬래브 자체가 두꺼워야 매달려 있는 것으로 읽힌다 */
+  --apron-h: calc(var(--u) * 2.2);
+  /* 정면이 아닐 때 덮이는 그늘의 농도. .wall 처럼 filter:brightness 로
+     처리할 수 없다 — filter 는 preserve-3d 를 풀어 가구를 납작하게
+     만든다. 대신 각 면에 검은 막을 한 겹 씌운다. */
+  --shade: 0.58;
+
+  position: absolute;
+  left: calc(var(--S) / -2);
+  top: calc(var(--H) / -2);
+  width: var(--S);
+  height: var(--H);
+  transform-style: preserve-3d;
+  transform: rotateY(calc(var(--i) * var(--sector) * -1))
+    translateZ(calc(var(--A) * -1 + var(--desk-z)));
+  pointer-events: none;
+}
+
+.console[data-active] {
+  --shade: 0;
+}
+
+/* 면마다 씌우는 그늘막 — 벽의 밝기 전환과 같은 박자로 걷힌다 */
+.console__top::after,
+.console__apron::after,
+.placard__hit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: rgb(0 0 0 / var(--shade));
+  transition: background-color var(--turn) var(--ease);
+  pointer-events: none;
+}
+
+/* 상판 — 벽에 붙은 뒤쪽 모서리를 축으로 눕혀 관람자 쪽으로 펼친다 */
+.console__top {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--H) - var(--desk-h));
+  width: var(--desk-w);
+  height: var(--desk-d);
+  margin-left: calc(var(--desk-w) / -2);
+  transform-origin: 50% 0;
+  transform: rotateX(90deg);
+  /* 서 있는 눈높이에서 상판은 7~8도 정도로 아주 얕게 보인다(현실이 그렇다).
+     그래서 이 면이 어두우면 테이블이 그냥 검은 판자로 읽히고, 위에 놓인
+     물건은 허공에 뜬 것처럼 보인다. 조명을 정면으로 받는 면답게 방 안에서
+     가장 밝게 둬야 "물건을 올려놓을 표면"으로 읽힌다. */
+  background:
+    /* 천장 조명이 상판에 만드는 웅덩이 */
+    radial-gradient(56% 140% at 50% 52%, rgb(var(--light) / 0.18), transparent 76%),
+    /* 널판 이음매 — 얕게 보이는 면이라 조금만 진해도 타일처럼 읽힌다 */
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 34px),
+    /* 벽에 붙은 안쪽은 그늘지고, 앞으로 나올수록 빛을 받는다.
+       흰색이 아니라 조명색(--light)을 섞어야 잿빛 플라스틱이 아닌
+       따뜻한 나무로 읽힌다. */
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--floor-a) 84%, #000) 0%,
+      color-mix(in srgb, var(--floor-a) 64%, rgb(var(--light))) 58%,
+      color-mix(in srgb, var(--floor-a) 76%, rgb(var(--light))) 100%
+    );
+}
+
+/* 상판 두께 + 그 아래 앞치마 (앞에서 보이는 수직면) */
+.console__apron {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--H) - var(--desk-h));
+  width: var(--desk-w);
+  height: var(--apron-h);
+  margin-left: calc(var(--desk-w) / -2);
+  transform: translateZ(var(--desk-d));
+  background: linear-gradient(
+    180deg,
+    /* 상판 단면 — 위쪽 능선이 빛을 받는다 */
+      color-mix(in srgb, var(--floor-a) 72%, rgb(var(--light))) 0 30%,
+    color-mix(in srgb, var(--floor-a) 58%, #000) 46%,
+    color-mix(in srgb, var(--floor-b) 88%, #000) 100%
+  );
+  box-shadow: 0 calc(var(--u) * 0.7) calc(var(--u) * 1.6) rgba(0, 0, 0, 0.5);
+}
+
+/* 벽에 지는 그림자 — 다리가 없는 선반을 벽에 붙여 놓는 건 결국 이것이다.
+   벽면 바로 앞에 세워 선반 아래쪽으로 드리운다. */
+.console__cast {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--H) - var(--desk-h));
+  width: calc(var(--desk-w) * 1.24);
+  height: calc(var(--u) * 16);
+  margin-left: calc(var(--desk-w) * -0.62);
+  transform: translateZ(calc(var(--desk-z) * -1 + 1px));
+  background: radial-gradient(
+    46% 96% at 50% 0%,
+    rgba(0, 0, 0, 0.82),
+    rgba(0, 0, 0, 0.32) 46%,
+    transparent 80%
+  );
+}
+
+/* 상판 위에 놓인 물건들이 사는 평면 — 상판 바로 위 */
+.console__items {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--H) - var(--desk-h));
+  width: var(--desk-w);
+  height: var(--desk-d);
+  margin-left: calc(var(--desk-w) / -2);
+  transform-origin: 50% 0;
+  transform: rotateX(90deg) translateZ(1px);
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 3.6);
+}
+
+/* 선반에 세워 둔 작은 액자.
+   눕혀 두면 선반을 얕게 보는 각도 때문에 아이콘이 뭉개진다. 벽에 걸린
+   액자와 같은 어휘(몰딩 + 흰 매트)를 작게 줄여 선반 위에 세우면 방의
+   언어에도 맞고 가장 잘 읽힌다. 아래 모서리를 축으로 정확히 90도만
+   세워 카메라를 똑바로 마주 보게 한다. */
+.placard {
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: 50% 100%;
+  transform: rotateX(-90deg);
+}
+
+/* 선반에 지는 그림자 — 다시 눕혀 선반 면에 붙인다. 벽 쪽으로 길게
+   늘여야 한다: 선반이 얕게 보여서 짧은 그림자는 아예 안 보이고,
+   그러면 액자가 떠 있는 것처럼 읽힌다. */
+.placard::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 145%;
+  height: 165%;
+  transform-origin: 50% 100%;
+  transform: translateX(-50%) rotateX(90deg);
+  background: radial-gradient(52% 44% at 50% 88%, rgba(0, 0, 0, 0.78), transparent 76%);
+}
+
+/* 몰딩 — 벽의 .art__frame 과 같은 방향성 그라디언트를 작게 줄인 것 */
+.placard__hit {
+  position: relative;
+  display: block;
+  width: calc(var(--u) * 6);
+  height: calc(var(--u) * 6);
+  padding: calc(var(--u) * 0.42);
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--frame-b) 72%, #fff) 0%,
+    var(--frame-b) 26%,
+    var(--frame-a) 74%,
+    color-mix(in srgb, var(--frame-a) 84%, #000) 100%
+  );
+  box-shadow:
+    0 calc(var(--u) * 0.32) calc(var(--u) * 0.75) rgba(0, 0, 0, 0.62),
+    inset 0 calc(var(--u) * 0.05) 0 rgb(var(--light-soft) / 0.42);
+  transition:
+    transform 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+
+.console[data-active] .placard__hit {
+  pointer-events: auto;
+}
+
+/* 매트 — 벽의 액자와 같은 거의 흰 종이. 아이콘은 그 위에 찍힌 잉크.
+   위에서 조명을 받으므로 윗변이 밝고 아래로 갈수록 살짝 떨어진다 —
+   균일한 흰 사각형이면 종이가 아니라 화면처럼 보인다. */
+.placard__plate {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    178deg,
+    var(--mat, #f6f4f0) 0%,
+    color-mix(in srgb, var(--mat, #f6f4f0) 93%, #000) 62%,
+    color-mix(in srgb, var(--mat, #f6f4f0) 82%, #000) 100%
+  );
+  color: #24211d;
+  box-shadow: inset 0 calc(var(--u) * 0.1) calc(var(--u) * 0.2) -1px rgba(0, 0, 0, 0.3);
+}
+
+.placard__plate svg {
+  display: block;
+  width: calc(var(--u) * 2.5);
+  height: calc(var(--u) * 2.5);
+}
+
+.placard__plate .brand-letter {
+  font-family: var(--font-display);
+  font-size: calc(var(--u) * 2.5);
+  line-height: 1;
+}
+
+/* 벽에 걸린 액자(.art__hit)와 같은 몸짓 — 살짝 떠오르고 그림자가 깊어진다 */
+.placard__hit:hover {
+  transform: translateY(calc(var(--u) * -0.55));
+  box-shadow:
+    0 calc(var(--u) * 0.9) calc(var(--u) * 1.6) rgba(0, 0, 0, 0.66),
+    inset 0 calc(var(--u) * 0.05) 0 rgb(var(--light-soft) / 0.55);
+}

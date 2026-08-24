@@ -2,6 +2,7 @@ import { useEffect, useMemo, type CSSProperties, type RefObject } from 'react'
 import { settings } from '../data/content'
 import type { Artwork, Wall as WallData } from '../data/types'
 import type { RoomMetrics } from '../hooks/useRoomMetrics'
+import { Console } from './Console'
 import { WallContent } from './Wall'
 
 type Props = {
@@ -104,6 +105,14 @@ export function Room({ walls, metrics, index, roomRef, onOpen }: Props) {
             </section>
           )
         })}
+
+        {/* 가구는 벽면 위가 아니라 방 안에 놓인다 — 벽(평면)의 자식이 되면
+            원근을 따로 타서 벽에 그린 그림처럼 보인다. */}
+        {walls.map((wall, i) =>
+          wall.kind === 'hall' ? (
+            <Console key={`console-${wall.id}`} wall={wall} index={i} active={i === index} />
+          ) : null,
+        )}
       </div>
     </div>
   )
