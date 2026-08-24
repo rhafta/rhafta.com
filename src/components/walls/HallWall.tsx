@@ -16,7 +16,7 @@ export function HallWall({ wall }: { wall: HallWallData }) {
         <div className="hall__rule" aria-hidden="true" />
         <p className="hall__intro">{wall.intro}</p>
       </div>
-      {/* 링크를 탁상 위에 놓인 명패처럼 — 방 자체의 원근/입체 문법을 그대로 쓴다 */}
+      {/* 링크를 탁상 위에 놓인 메달처럼 — 방 자체의 원근/입체 문법을 그대로 쓴다 */}
       <div className="desk">
         <div className="desk__scene">
           <div className="desk__top" aria-hidden="true" />
@@ -33,7 +33,6 @@ export function HallWall({ wall }: { wall: HallWallData }) {
                   <span className="desk__icon">
                     <BrandIcon label={l.label} />
                   </span>
-                  <span className="desk__label">{l.label}</span>
                 </ExternalLink>
               </li>
             ))}

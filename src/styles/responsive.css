@@ -116,9 +116,8 @@
 }
 
 .app[data-compact] .desk__hit {
-  min-width: calc(var(--u) * 8.5);
-  padding: calc(var(--u) * 1.6) calc(var(--u) * 1.7);
-  gap: calc(var(--u) * 0.9);
+  width: calc(var(--u) * 6.2);
+  height: calc(var(--u) * 6.2);
 }
 
 .app[data-compact] .desk__icon svg,
@@ -126,10 +125,6 @@
   width: calc(var(--u) * 3.2);
   height: calc(var(--u) * 3.2);
   font-size: calc(var(--u) * 3.2);
-}
-
-.app[data-compact] .desk__label {
-  font-size: calc(var(--u) * 1.3);
 }
 
 /* 소개 패널 */
