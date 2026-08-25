@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Analytics } from '@vercel/analytics/react'
 import App from './App'
 
 // 자체 호스팅 폰트 — 실제 쓰는 굵기의 latin 서브셋만 (base.css 의 --font-* 참고).
@@ -25,5 +26,6 @@ import './styles/index.css'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
+    <Analytics />
   </StrictMode>,
 )
